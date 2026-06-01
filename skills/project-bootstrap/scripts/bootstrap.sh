@@ -62,7 +62,11 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-PROJECT_DIR="$HOME/projects/$PROJECT_NAME"
+if [[ "$PROJECT_NAME" =~ ^[./] ]]; then
+  PROJECT_DIR="$(readlink -f "$PROJECT_NAME")"
+else
+  PROJECT_DIR="$HOME/projects/$PROJECT_NAME"
+fi
 TEMPLATES_DIR="${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/templates}/$PROCESS_SLUG"
 
 # 1. Validation Checks

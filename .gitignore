@@ -5,3 +5,5 @@ worktrees/
 spec_change_proposal.md
 *.pyc
 __pycache__/
+sandbox/
+

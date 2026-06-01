@@ -88,15 +88,11 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 
 The following configurations are fully functional inside the workspace `.agents/` folder:
 
-### 1. SDD Core Rules (`rules/sdd-workflow.md`)
-Enforces strict phases of Spec-Driven Development:
-* **Phase 0: Planning First**: Prohibits any code edits or spec modifications without an approved `implementation_plan.md` artifact.
-* **Strict Spec-to-Design Isolation**:
-  * Functional requirements must be drafted in `SPEC.md`. All engineering details (e.g. databases, endpoints, parameters) are strictly banned from this file.
-  * Technical blueprints must be drafted in `DESIGN.md`. No production code is generated until both `SPEC.md` and `DESIGN.md` are approved by the user.
-* **Phase 3: Spec Reconciliation Protocol**: Restricts code implementors from modifying design documents directly. Gaps must be drafted in a `spec_change_proposal.md` artifact and approved by the user before the Architect merges them.
-* **Phase 4: Mandatory Testing**: Demands comprehensive test cases and passing execution outputs before any task is declared complete (no "blind completes").
-* **Conversational Intent Guardrail**: Auto-classifies user prompts. Purely informational queries are answered *strictly* in text/markdown, completely disabling file editing tools to avoid accidental code generation.
+### 1. SDD Core Rules (`rules/`)
+We decompose core constraints into three focused modular rule files:
+* **`sdd-pipeline.md`**: Enforces Phase 0 planning-first controls, the Spec ➔ Design ➔ Tasks capsule pipeline sequence, and the strict 12-task limit.
+* **`sdd-sandboxing.md`**: Confines Architect and Implementor to active worktree sandboxes, denying top-level workspace modifications.
+* **`sdd-tdd-standards.md`**: Enforces strict TDD loops (no blind completes), hermetic mocking limits, and Google docstring hygiene.
 
 ### 2. Custom Agents (`agents/`)
 * **`sdd-architect`**: Equipped with search and write tools limited strictly to `docs/sdd/`. Denied shell command execution.

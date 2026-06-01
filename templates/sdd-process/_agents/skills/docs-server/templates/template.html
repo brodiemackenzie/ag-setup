@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} | Documentation Portal</title>
+    <link rel="stylesheet" href="{{relative_path}}style.css">
+    <!-- Mermaid.js for Dynamic SVG Renders -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                securityLevel: 'loose'
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Computed Sidebar with Search Filter -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Documentation</h2>
+                <input type="text" id="search-input" placeholder="Filter documentation..." onkeyup="filterSidebar()">
+            </div>
+            <nav class="sidebar-nav">
+                {{sidebar}}
+            </nav>
+        </aside>
+
+        <!-- Content Pane -->
+        <main class="content">
+            <article class="markdown-body">
+                {{content}}
+            </article>
+        </main>
+    </div>
+
+    <!-- Client-Side Search Filter -->
+    <script>
+        function filterSidebar() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toLowerCase();
+            const nav = document.querySelector('.sidebar-nav');
+            const links = nav.getElementsByTagName('a');
+
+            for (let i = 0; i < links.length; i++) {
+                const text = links[i].textContent || links[i].innerText;
+                const item = links[i].parentElement;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

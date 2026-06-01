@@ -1,0 +1,6 @@
+{
+  "name": "sdd-architect",
+  "configPath": {
+    "relativePathToConfig": "config.yaml"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "sdd-project-manager",
+  "configPath": {
+    "relativePathToConfig": "config.yaml"
+  }
+}

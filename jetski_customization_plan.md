@@ -67,7 +67,7 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 │   │       │   │   └── SKILL.md
 │   │       │   ├── session-checkpoint/   # State serialization & recovery skill
 │   │       │   │   └── SKILL.md
-│   │       │   └── docs-server/          # Portable offline static wiki portal
+│   │       │   └── docs-compiler/        # Portable offline static wiki portal
 │   │       │       └── SKILL.md
 │   │       └── agents/
 │   │           ├── sdd-architect/        # Pure specification writer (No shell)
@@ -346,7 +346,7 @@ Rather than running background server processes or heavy frameworks like MkDocs,
   * **Mermaid.js Dynamic Rendering**: Renders complex Mermaid diagrams directly inside standard browsers using a global CDN script, completely bypassing strict CORS and ES module limitations.
   * **Hard-Compiled Sidebar & search**: Embeds the computed hierarchical navigation sidebar into every single compiled page with an instant, client-side JavaScript text filter running 100% in browser.
 
-### 2. The Wiki Compiler Skill (`skills/docs-server/`)
+### 2. The Wiki Compiler Skill (`skills/docs-compiler/`)
 Provides the `sdd-project-manager` agent with playbooks to generate the portable local wiki.
 * **Structure**:
   * `compile_wiki.py`: Scans `docs/` recursively, translates markdown, converts Mermaid code blocks to `<pre class="mermaid">` tags, computes relative depth navigation offsets, embeds sidebars, and compiles output HTMLs to `.docs_build/`.

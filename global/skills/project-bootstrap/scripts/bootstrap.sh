@@ -134,4 +134,13 @@ spec_change_proposal.md
 EOF
 
 log "Initialization complete! Project scaffolded successfully at $PROJECT_DIR."
-log "Next steps: Commit your changes and start the SDD discovery process!"
+
+# 8. Open the new workspace in a new window (if code CLI is available)
+if command -v code >/dev/null 2>&1; then
+  log "Launching new IDE window for workspace: $PROJECT_DIR..."
+  code -n "$PROJECT_DIR"
+else
+  log "Note: 'code' command-line tool not found in PATH. Please open $PROJECT_DIR manually."
+fi
+
+log "Next steps: Switch to your new window, start a new chat, and begin the SDD discovery process!"

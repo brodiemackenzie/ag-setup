@@ -21,10 +21,13 @@ Instructions:
      ```
      *(Replace `<project_name>`, `<github_url>`, and `<scaffold>` with the exact answers provided by the user).*
 
-4. **Present Success**:
+4. **Present Success & Transition Workspace**:
    * Show the successful shell output logs to the user.
-   * Inform the user that the global process templates have been successfully installed into `.agents/` in their new workspace.
-   * Direct the user to open the newly created workspace folder to begin their Spec-Driven Development proposal interview.
+   * Confirm that the script has automatically opened a new Jetski window matching the project folder using the `code -n` CLI utility.
+   * Direct the user to:
+     1. Switch to the newly opened IDE window.
+     2. Open a new chat session (which will automatically be named after the project workspace).
+     3. Ask their new agent to start the discovery process (e.g., "Help me draft the project proposal") to begin the Spec-Driven Development functional journey.
 
 Constraints:
 * Only use the instructions in this file when bootstrapping a new project.

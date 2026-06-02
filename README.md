@@ -104,6 +104,33 @@ To install these templates globally so you can use the bootstrapper CLI to initi
    ```
    *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as workspace template modifications, rules, or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'workspace', 'global_workflows', or 'rules' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
+3. **Authorize Global Read-Only Workspace Access**:
+   Since process templates, modular rules, and playbooks are symlinked directly from your version-controlled `ag-setup` repository, you **MUST** grant all active agents permission to read this folder. Run this safe one-liner to configure it without exposing write permissions:
+   ```bash
+   python3 -c "
+   import json, os
+   path = os.path.expanduser('~/.gemini/config/config.json')
+   os.makedirs(os.path.dirname(path), exist_ok=True)
+   data = {}
+   if os.path.exists(path):
+       try:
+           with open(path, 'r') as f: data = json.load(f)
+       except: pass
+   data.setdefault('permissions', {}).setdefault('allow', [])
+
+   read_rule = 'read_file(/usr/local/google/home/brodiem/projects/ag-setup)'
+   write_rule = 'write_file(/usr/local/google/home/brodiem/projects/ag-setup)'
+
+   if read_rule not in data['permissions']['allow']:
+       data['permissions']['allow'].append(read_rule)
+   if write_rule in data['permissions']['allow']:
+       data['permissions']['allow'].remove(write_rule)
+
+   with open(path, 'w') as f: json.dump(data, f, indent=2)
+   print('Successfully added ag-setup to global read-only allowlist!')
+   "
+   ```
+
 ---
 
 ## 🛠️ Tooling & Command Manual

@@ -135,12 +135,16 @@ EOF
 
 log "Initialization complete! Project scaffolded successfully at $PROJECT_DIR."
 
-# 8. Open the new workspace in a new window (if code CLI is available)
-if command -v code >/dev/null 2>&1; then
-  log "Launching new IDE window for workspace: $PROJECT_DIR..."
+# 8. Open the new workspace in a new window (preferring JetSki over VS Code)
+JETSKI_CLI="/opt/jetski-ide/bin/jetski"
+if [ -f "$JETSKI_CLI" ]; then
+  log "Launching new JetSki IDE window for workspace: $PROJECT_DIR..."
+  "$JETSKI_CLI" -n "$PROJECT_DIR"
+elif command -v code >/dev/null 2>&1; then
+  log "Launching new VS Code window for workspace: $PROJECT_DIR..."
   code -n "$PROJECT_DIR"
 else
-  log "Note: 'code' command-line tool not found in PATH. Please open $PROJECT_DIR manually."
+  log "Note: JetSki IDE or VS Code command-line launcher not found. Please open $PROJECT_DIR manually."
 fi
 
 log "Next steps: Switch to your new window, start a new chat, and begin the SDD discovery process!"

@@ -23,7 +23,7 @@ Instructions:
 
 4. **Present Success & Transition Workspace**:
    * Show the successful shell output logs to the user.
-   * Confirm that the script has automatically opened a new Jetski window matching the project folder using the `code -n` CLI utility.
+   * Confirm that the script has automatically opened a new JetSki window matching the project folder using the JetSki CLI launcher.
    * Direct the user to:
      1. Switch to the newly opened IDE window.
      2. Open a new chat session (which will automatically be named after the project workspace).

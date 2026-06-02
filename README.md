@@ -100,9 +100,18 @@ To install these templates globally so you can use the bootstrapper CLI to initi
 
 ## 🛠️ Tooling & Command Manual
 
-### 1. The Project Bootstrapper (`bootstrap.sh`)
-The bootstrapper CLI automates greenfield directory creation under `~/projects/`, cleans framework git files, binds target origin remotes, and safely rsyncs process templates without duplicate git history metadata.
+### 1. The Project Bootstrapper (`bootstrap.sh` / `/bootstrap`)
+The bootstrapper CLI and conversational workflow automate greenfield directory creation under `~/projects/`, clean framework git files, bind target origin remotes, and safely rsync process templates without duplicate git history metadata.
 
+#### 🎙️ Option A: Interactive `/bootstrap` (Recommended)
+If you are in a chat session with Jetski/Antigravity, simply type:
+```
+/bootstrap
+```
+The agent will take the lead and conversationally collect the three required inputs (Project Name, GitHub Remote SSH URL, and scaffolding choice) **one at a time** in chat, and execute the installer automatically on your behalf. No terminal commands to remember!
+
+#### 💻 Option B: CLI Command Script
+Run the script manually in your terminal:
 * **Location**: `skills/project-bootstrap/scripts/bootstrap.sh`
 * **Usage**:
   ```bash

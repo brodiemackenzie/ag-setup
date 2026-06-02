@@ -28,6 +28,21 @@ To initialize a new repository using the global installer:
    * `--process`: Target agent workflow template to install (default: `sdd-process`).
    * `--scaffold`: Optional framework boilerplate scaffold (e.g., `nextjs`, `python`, or `none`).
 
+### 🎙️ Interactive Conversational Workflow (Alternative to CLI)
+
+If the user types `/bootstrap`, `bootstrap`, or `start a new project` inside their active Antigravity chat window, you must dynamically take the lead as the **Conversational Installer Agent**:
+
+1. **Parameters Collection**: Ask the user for the required parameters **one at a time** in chat (do not dump them all at once):
+   * *Step 1*: Ask for the **Project Name** (e.g., *"Great! Let's initialize a new workspace. What would you like to name the project folder?"*).
+   * *Step 2*: Ask for the **Target GitHub SSH URL** (e.g., *"Got it. What is the target GitHub remote repository SSH URL to bind to this project?"*).
+   * *Step 3*: Ask for the **Scaffolding Choice** (e.g., *"Should we scaffold a basic Python structure, a Next.js app, or start with a blank slate? Please reply with 'python', 'nextjs', or 'none'."*).
+2. **Formulate & Run the Shell Command**: Once all parameters are collected, formulate the appropriate CLI execution string and run it on behalf of the user using the `run_command` tool:
+   ```bash
+   # Execute the global bootstrapper CLI:
+   ~/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_url> --scaffold <framework>
+   ```
+3. **Present the Outcome**: Display the successful provisioning console logs to the user, confirm that all custom rules and skills are copied, and guide the user to open the new directory to start their proposal interview.
+
 ### Execution Mechanics
 
 The script executes the following steps sequentially:

@@ -111,10 +111,13 @@ Hosts the **`manage_worktree.sh`** script, supporting:
 
 The following blueprints define the global automation layer that will be installed globally in the user's home directory:
 
-### 1. Global Bootstrapper Script (`~/.gemini/skills/project-bootstrap/scripts/bootstrap.sh`)
-A unified CLI command designed to initialize standard open-source repositories.
-* **Command**: `bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>] [--scaffold <framework>]`
-  * *Note: `--process` defaults to `sdd-process`.*
+### 1. Global Bootstrapper (`~/.gemini/skills/project-bootstrap/`)
+A unified installer designed to initialize standard workspaces either via interactive conversational chat or CLI.
+* **Trigger Command**: `/bootstrap` in chat, or run `bootstrap.sh` manually in terminal.
+* **Conversational Interview Mode**:
+  1. The agent detects `/bootstrap` or `start project` intent.
+  2. Interactively collects the project name, GitHub remote SSH URL, and scaffolding framework choice (one question at a time).
+  3. Automatically executes the CLI script under the hood using `run_command`.
 * **Execution Steps**:
   1. **Directory Provisioning**: Creates the directory `~/projects/<project_name>` and initializes Git.
   2. **Scaffolding**: If `--scaffold` is provided, runs standard generators (e.g. `create-next-app`).
@@ -124,7 +127,7 @@ A unified CLI command designed to initialize standard open-source repositories.
      ```bash
      rsync -av --exclude='.git' "~/.gemini/templates/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
      ```
-  6. **SDD Interview Trigger**: If using `sdd-process`, automatically kicks off the SDD interview to outline the first Epic and Feature.
+  6. **SDD Interview Trigger**: Automatically launches the initial speculative interview to draft the high-level project proposal.
 
 ### 2. Version-Controlled Configuration Repository
 * **Mechanism**: All templates are version-controlled in the project's root `templates/` directory and pushed to a private GitHub repository (`brodiem/ag-setup`).

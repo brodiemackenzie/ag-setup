@@ -51,12 +51,15 @@ ag-setup/
 ├── jetski_customization_plan.md            # Detailed Antigravity customization plan
 ├── sandbox/                                # Git-ignored sandbox directory for local dry-run tests
 │   └── mock-project/                       # Clean bootstrapped mock project replica
-├── skills/
-│   └── project-bootstrap/                  # Global project bootstrapper skill
-│       ├── SKILL.md                        # Bootstrapper playbook
-│       └── scripts/
-│           └── bootstrap.sh                # Automates directory setup, cleaning, & template rsyncs
-└── templates/
+├── global/                                 # GLOBAL LAYER (Linked system-wide to ~/.gemini/)
+│   ├── global_workflows/
+│   │   └── bootstrap.md                    # The conversational /bootstrap command
+│   └── skills/
+│       └── project-bootstrap/
+│           ├── README.md                   # Bootstrapper CLI manual
+│           └── scripts/
+│               └── bootstrap.sh            # Global installer script
+└── templates/                              # TEMPLATES LAYER (rsync'd to new projects)
     └── sdd-process/                        # SDD Process Template (Copied to new projects)
         └── _agents/
             ├── agents/
@@ -93,7 +96,7 @@ To install these templates globally so you can use the bootstrapper CLI to initi
 2. **Symlink Your Workspace Templates & Workflows**:
    ```bash
    ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates
-   ln -s ~/projects/ag-setup/workflows/ ~/.gemini/config/global_workflows
+   ln -s ~/projects/ag-setup/global/global_workflows/ ~/.gemini/config/global_workflows
    ```
    *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'templates' or 'global_workflows' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
@@ -113,10 +116,10 @@ The agent will take the lead and conversationally collect the three required inp
 
 #### 💻 Option B: CLI Command Script
 Run the script manually in your terminal:
-* **Location**: `skills/project-bootstrap/scripts/bootstrap.sh`
+* **Location**: `global/skills/project-bootstrap/scripts/bootstrap.sh`
 * **Usage**:
   ```bash
-  ./skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>] [--scaffold <framework>]
+  ./global/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>] [--scaffold <framework>]
   ```
 * **Arguments**:
   * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).

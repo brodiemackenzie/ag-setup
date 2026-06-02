@@ -17,7 +17,7 @@ Instructions:
 3. **Execute the Installer**:
    * Once all parameters are collected, formulate the CLI command exactly as specified below and run it on behalf of the user using your terminal command tool:
      ```bash
-     /usr/local/google/home/brodiem/projects/ag-setup/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_url> --scaffold <scaffold>
+     /usr/local/google/home/brodiem/projects/ag-setup/global/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_url> --scaffold <scaffold>
      ```
      *(Replace `<project_name>`, `<github_url>`, and `<scaffold>` with the exact answers provided by the user).*
 

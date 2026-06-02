@@ -75,11 +75,12 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 │   │           └── sdd-project-manager/  # Branch organizer & workspace cleaner
 │   └── vibe-coding/                      # Rapid Prototyping Vibe-Coding Template (Example)
 │       └── _agents/                      # Custom Vibe-Coding Rules & Agent Capsules
-└── skills/
-    └── project-bootstrap/                # Global Scaffolder Skill (Stored in user home directory)
-        ├── SKILL.md
-        └── scripts/
-            └── bootstrap.sh              # Global project bootstrapper
+└── global/
+    └── skills/
+        └── project-bootstrap/            # Global Scaffolder Skill (Stored in user home directory)
+            ├── README.md
+            └── scripts/
+                └── bootstrap.sh          # Global project bootstrapper
 ```
 
 ---

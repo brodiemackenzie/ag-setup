@@ -14,7 +14,7 @@ The custom architecture operates on two levels: the **Global Layer** (system-wid
 graph TD
     subgraph Global [Global Layer (~/.gemini/)]
         A[Global project-bootstrap Skill] -->|Executes bootstrap.sh| B[Target Workspace Folder]
-        SL[~/.gemini/config/templates/] -->|Symlinked to local workspace| C
+        SL[~/.gemini/config/workspace/] -->|Symlinked to local workspace| C
     end
     
     subgraph Local [Local Layer (~/projects/my-app/)]
@@ -28,7 +28,7 @@ graph TD
     end
     
     subgraph Development [Development Layer (~/projects/ag-setup/)]
-        C[ag-setup/templates/] -->|Version-controlled locally| Git[(GitHub Repository)]
+        C[ag-setup/workspace/] -->|Version-controlled locally| Git[(GitHub Repository)]
     end
 ```
 
@@ -59,7 +59,7 @@ ag-setup/
 │           ├── README.md                   # Bootstrapper CLI manual
 │           └── scripts/
 │               └── bootstrap.sh            # Global installer script
-└── templates/                              # TEMPLATES LAYER (rsync'd to new projects)
+└── workspace/                              # WORKSPACE LAYER (rsync'd to new projects)
     └── sdd-process/                        # SDD Process Template (Copied to new projects)
         └── _agents/
             ├── agents/
@@ -95,10 +95,10 @@ To install these templates globally so you can use the bootstrapper CLI to initi
    ```
 2. **Symlink Your Workspace Templates & Workflows**:
    ```bash
-   ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates
+   ln -s ~/projects/ag-setup/workspace/ ~/.gemini/config/workspace
    ln -s ~/projects/ag-setup/global/global_workflows/ ~/.gemini/config/global_workflows
    ```
-   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'templates' or 'global_workflows' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
+   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as workspace template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'workspace' or 'global_workflows' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
 ---
 
@@ -125,7 +125,7 @@ Run the script manually in your terminal:
   * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).
   * `<github_repo_url>`: The GitHub URL to bind as `origin`.
 * **Options**:
-  * `--process`: The template slug inside `~/.gemini/templates/` (defaults to `sdd-process`).
+  * `--process`: The template slug inside `~/.gemini/config/workspace/` (defaults to `sdd-process`).
   * `--scaffold`: Framework boilerplate setup: `nextjs` (Npx generator), `python` (Venv, requirements, basic pytest setup), or `none` (default).
 
 ---

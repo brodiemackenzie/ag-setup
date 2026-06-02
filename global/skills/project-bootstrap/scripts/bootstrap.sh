@@ -28,7 +28,7 @@ usage() {
   echo "  github_repo_url  The GitHub remote repository URL to bind"
   echo ""
   echo "Options:"
-  echo "  --process        Process template to copy from ~/.gemini/templates/ (default: sdd-process)"
+  echo "  --process        Process template to copy from ~/.gemini/config/workspace/ (default: sdd-process)"
   echo "  --scaffold       Framework boilerplate to scaffold: 'nextjs', 'python', or 'none' (default: none)"
   exit 1
 }
@@ -67,7 +67,7 @@ if [[ "$PROJECT_NAME" =~ ^[./] ]]; then
 else
   PROJECT_DIR="$HOME/projects/$PROJECT_NAME"
 fi
-TEMPLATES_DIR="${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/config/templates}/$PROCESS_SLUG"
+TEMPLATES_DIR="${GEMINI_WORKSPACE_DIR:-${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/config/workspace}}/$PROCESS_SLUG"
 
 # 1. Validation Checks
 if [ -d "$PROJECT_DIR" ]; then
@@ -77,9 +77,9 @@ fi
 
 if [ ! -d "$TEMPLATES_DIR" ]; then
   log_err "Process template not found: $TEMPLATES_DIR"
-  log_err "Please ensure your templates are symlinked to ~/.gemini/config/templates/ first:"
+  log_err "Please ensure your workspace templates are symlinked to ~/.gemini/config/workspace/ first:"
   log_err "  mkdir -p ~/.gemini/config/"
-  log_err "  ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates"
+  log_err "  ln -s ~/projects/ag-setup/workspace/ ~/.gemini/config/workspace"
   exit 1
 fi
 

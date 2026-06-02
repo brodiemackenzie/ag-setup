@@ -16,7 +16,7 @@ The custom architecture operates on two levels: the **Global Layer** (system-wid
 graph TD
     subgraph Global [Global Layer (~/.gemini/)]
         A[Global project-bootstrap Skill] -->|Executes bootstrap.sh| B[Target Workspace Folder]
-        SL[~/.gemini/templates/] -->|Symlinked to local workspace| C
+        SL[~/.gemini/config/workspace/] -->|Symlinked to local workspace| C
     end
     
     subgraph Local [Local Layer (~/projects/my-app/)]
@@ -30,7 +30,7 @@ graph TD
     end
     
     subgraph Development [Development Layer (~/projects/ag-setup/)]
-        C[ag-setup/templates/] -->|Version-controlled locally| Git[(GitHub Repository)]
+        C[ag-setup/workspace/] -->|Version-controlled locally| Git[(GitHub Repository)]
     end
 ```
 
@@ -41,7 +41,7 @@ graph TD
 ```
 ag-setup/                                 # Local Workspace Root (Git Repository)
 ├── jetski_customization_plan.md
-├── templates/                            # Master Templates Directory (Pushed to GitHub)
+├── workspace/                            # Master Workspace Directory (Pushed to GitHub)
 │   ├── sdd-process/                      # Spec-Driven Development Process Template
 │   │   └── _agents/                      # The SDD Agent/Skill Capsule
 │   │       ├── rules/
@@ -140,10 +140,10 @@ A unified installer designed to initialize standard workspaces either via intera
      ```
   2. Symlink the local templates and workflows folders directly to the global directories:
      ```bash
-     ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates
-     ln -s ~/projects/ag-setup/workflows/ ~/.gemini/config/global_workflows
+     ln -s ~/projects/ag-setup/workspace/ ~/.gemini/config/workspace
+     ln -s ~/projects/ag-setup/global/global_workflows/ ~/.gemini/config/global_workflows
      ```
-  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly available globally in `~/.gemini/config/templates/` without manual cloning or pulling.*
+  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly available globally in `~/.gemini/config/workspace/` without manual cloning or pulling.*
 
 ---
 

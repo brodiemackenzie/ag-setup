@@ -42,39 +42,40 @@ graph TD
 ag-setup/                                 # Local Workspace Root (Git Repository)
 ├── jetski_customization_plan.md
 ├── workspace/                            # Master Workspace Directory (Pushed to GitHub)
-│   ├── sdd-process/                      # Spec-Driven Development Process Template
-│   │   └── _agents/                      # The SDD Agent/Skill Capsule
-│   │       ├── rules/
-│   │       │   └── sdd-workflow.md       # The Core SDD Rules (always_on)
-│   │       ├── skills/
-│   │       │   ├── worktree-manager/     # Git worktree management skill
-│   │       │   │   ├── SKILL.md
-│   │       │   │   └── scripts/
-│   │       │   │       └── manage_worktree.sh
-│   │       │   ├── sdd-proposal-drafter/ # Interview & Proposal playbook (Vision Essence)
-│   │       │   │   └── SKILL.md
-│   │       │   ├── sdd-spec-writer/      # Interactive Spec Writer (Q&A Functional Journeys)
-│   │       │   │   └── SKILL.md
-│   │       │   ├── sdd-design-architect/ # Engineering blueprints (Schemas, APIs, Mermaid)
-│   │       │   │   └── SKILL.md
-│   │       │   ├── sdd-task-generator/   # BDD Gherkin task compiler
-│   │       │   │   └── SKILL.md
-│   │       │   ├── document-editor/      # Surgical markdown editor playbook
-│   │       │   │   └── SKILL.md
-│   │       │   ├── tdd-flow/             # Strict Red-Green-Refactor playbook
-│   │       │   │   └── SKILL.md
-│   │       │   ├── sdd-retrospective/    # Post-merge learnings harvester
-│   │       │   │   └── SKILL.md
-│   │       │   ├── session-checkpoint/   # State serialization & recovery skill
-│   │       │   │   └── SKILL.md
-│   │       │   └── docs-compiler/        # Portable offline static wiki portal
-│   │       │       └── SKILL.md
-│   │       └── agents/
-│   │           ├── sdd-architect/        # Pure specification writer (No shell)
-│   │           ├── sdd-implementor/      # Rigorous developer & tester (Shell active)
-│   │           └── sdd-project-manager/  # Branch organizer & workspace cleaner
-│   └── vibe-coding/                      # Rapid Prototyping Vibe-Coding Template (Example)
-│       └── _agents/                      # Custom Vibe-Coding Rules & Agent Capsules
+│   ├── templates/                        # Workspace templates folder
+│   │   ├── sdd-process/                  # Spec-Driven Development Process Template
+│   │   │   └── _agents/                  # The SDD Agent/Skill Capsule
+│   │   │       ├── rules/
+│   │   │       │   └── sdd-workflow.md       # The Core SDD Rules (always_on)
+│   │   │       ├── skills/
+│   │   │       │   ├── worktree-manager/     # Git worktree management skill
+│   │   │       │   │   ├── SKILL.md
+│   │   │       │   │   └── scripts/
+│   │   │       │   │       └── manage_worktree.sh
+│   │   │       │   ├── sdd-proposal-drafter/ # Interview & Proposal playbook (Vision Essence)
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── sdd-spec-writer/      # Interactive Spec Writer (Q&A Functional Journeys)
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── sdd-design-architect/ # Engineering blueprints (Schemas, APIs, Mermaid)
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── sdd-task-generator/   # BDD Gherkin task compiler
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── document-editor/      # Surgical markdown editor playbook
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── tdd-flow/             # Strict Red-Green-Refactor playbook
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── sdd-retrospective/    # Post-merge learnings harvester
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   ├── session-checkpoint/   # State serialization & recovery skill
+│   │   │       │   │   └── SKILL.md
+│   │   │       │   └── docs-compiler/        # Portable offline static wiki portal
+│   │   │       │       └── SKILL.md
+│   │   │       └── agents/
+│   │   │           ├── sdd-architect/        # Pure specification writer (No shell)
+│   │   │           ├── sdd-implementor/      # Rigorous developer & tester (Shell active)
+│   │   │           └── sdd-project-manager/  # Branch organizer & workspace cleaner
+│   │   └── vibe-coding/                      # Rapid Prototyping Vibe-Coding Template (Example)
+│   │       └── _agents/                      # Custom Vibe-Coding Rules & Agent Capsules
 └── global/
     └── skills/
         └── project-bootstrap/            # Global Scaffolder Skill (Stored in user home directory)

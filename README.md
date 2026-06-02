@@ -60,27 +60,28 @@ ag-setup/
 │           └── scripts/
 │               └── bootstrap.sh            # Global installer script
 └── workspace/                              # WORKSPACE LAYER (rsync'd to new projects)
-    └── sdd-process/                        # SDD Process Template (Copied to new projects)
-        └── _agents/
-            ├── agents/
-            │   ├── sdd-architect.json      # Specification & Design compiler JSON blueprint
-            │   ├── sdd-implementor.json    # TDD Implementor & Coder JSON blueprint
-            │   └── sdd-project-manager.json# Branch & Git worktree coordinator JSON blueprint
-            ├── rules/
-            │   ├── sdd-pipeline.md         # Modular rule: Phase 0 planning & Spec-Design-Tasks
-            │   ├── sdd-sandboxing.md       # Modular rule: Strict active worktree relative locks
-            │   └── sdd-tdd-standards.md    # Modular rule: Strict TDD loops & docstring lints
-            └── skills/
-                ├── docs-compiler/          # Standalone offline wiki compiler
-                ├── document-editor/        # Surgical Anchor-and-Verify markdown editor
-                ├── sdd-design-architect/   # Schemas, contracts, & ADR triggers
-                ├── sdd-proposal-drafter/   # executive summary & Epic layouts
-                ├── sdd-retrospective/      # Post-merge git parsing & lessons learned appending
-                ├── sdd-spec-writer/        # Discovery specs Q&A interviews
-                ├── sdd-task-generator/     # BDD Gherkin checklist compilers (12-task limit)
-                ├── session-checkpoint/     # Token-compaction state recovery checkpoints
-                ├── tdd-flow/               # Red-Green-Refactor loops
-                └── worktree-manager/       # Worktree lifecycle shell manager (manage_worktree.sh)
+    └── templates/                          # Workspace templates folder
+        └── sdd-process/                    # SDD Process Template (Copied to new projects)
+            └── _agents/
+                ├── agents/
+                │   ├── sdd-architect.json      # Specification & Design compiler JSON blueprint
+                │   ├── sdd-implementor.json    # TDD Implementor & Coder JSON blueprint
+                │   └── sdd-project-manager.json# Branch & Git worktree coordinator JSON blueprint
+                ├── rules/
+                │   ├── sdd-pipeline.md         # Modular rule: Phase 0 planning & Spec-Design-Tasks
+                │   ├── sdd-sandboxing.md       # Modular rule: Strict active worktree relative locks
+                │   └── sdd-tdd-standards.md    # Modular rule: Strict TDD loops & docstring lints
+                └── skills/
+                    ├── docs-compiler/          # Standalone offline wiki compiler
+                    ├── document-editor/        # Surgical Anchor-and-Verify markdown editor
+                    ├── sdd-design-architect/   # Schemas, contracts, & ADR triggers
+                    ├── sdd-proposal-drafter/   # executive summary & Epic layouts
+                    ├── sdd-retrospective/      # Post-merge git parsing & lessons learned appending
+                    ├── sdd-spec-writer/        # Discovery specs Q&A interviews
+                    ├── sdd-task-generator/     # BDD Gherkin checklist compilers (12-task limit)
+                    ├── session-checkpoint/     # Token-compaction state recovery checkpoints
+                    ├── tdd-flow/               # Red-Green-Refactor loops
+                    └── worktree-manager/       # Worktree lifecycle shell manager (manage_worktree.sh)
 ```
 
 ---
@@ -125,7 +126,7 @@ Run the script manually in your terminal:
   * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).
   * `<github_repo_url>`: The GitHub URL to bind as `origin`.
 * **Options**:
-  * `--process`: The template slug inside `~/.gemini/config/workspace/` (defaults to `sdd-process`).
+  * `--process`: The template slug inside `~/.gemini/config/workspace/templates/` (defaults to `sdd-process`).
   * `--scaffold`: Framework boilerplate setup: `nextjs` (Npx generator), `python` (Venv, requirements, basic pytest setup), or `none` (default).
 
 ---

@@ -53,6 +53,6 @@ The script executes the following steps sequentially:
 5. **Remote Bind**: Binds the origin repository.
 6. **Safe Template RSync**: Copies template configurations cleanly without duplicating template git histories:
    ```bash
-   rsync -av --exclude='.git' "~/.gemini/config/workspace/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
+   rsync -av --exclude='.git' "~/.gemini/config/workspace/templates/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
    ```
 7. **SDD Interview Kickoff**: Triggers the initial speculative interview to draft the project proposal.

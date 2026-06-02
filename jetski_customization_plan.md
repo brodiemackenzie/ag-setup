@@ -111,7 +111,7 @@ Hosts the **`manage_worktree.sh`** script, supporting:
 
 The following blueprints define the global automation layer that will be installed globally in the user's home directory:
 
-### 1. Global Bootstrapper (`~/.gemini/skills/project-bootstrap/`)
+### 1. Global Bootstrapper (`~/.gemini/config/skills/project-bootstrap/`)
 A unified installer designed to initialize standard workspaces either via interactive conversational chat or CLI.
 * **Trigger Command**: `/bootstrap` in chat, or run `bootstrap.sh` manually in terminal.
 * **Conversational Interview Mode**:
@@ -125,7 +125,7 @@ A unified installer designed to initialize standard workspaces either via intera
   4. **Git Remote Binds**: Removes template origins and binds `git remote add origin <github_repo_url>`.
   5. **VCS-Safe Config Copying**: Copies the specified process agent templates using `rsync` to exclude internal git tracking metadata:
      ```bash
-     rsync -av --exclude='.git' "~/.gemini/templates/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
+     rsync -av --exclude='.git' "~/.gemini/config/templates/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
      ```
   6. **SDD Interview Trigger**: Automatically launches the initial speculative interview to draft the high-level project proposal.
 
@@ -135,14 +135,14 @@ A unified installer designed to initialize standard workspaces either via intera
   To install templates globally while allowing the agent to edit them locally in the workspace:
   1. Create the global configuration directory in your home folder:
      ```bash
-     mkdir -p ~/.gemini/
+     mkdir -p ~/.gemini/config/
      ```
   2. Symlink the local templates and workflows folders directly to the global directories:
      ```bash
-     ln -s ~/projects/ag-setup/templates/ ~/.gemini/templates
-     ln -s ~/projects/ag-setup/workflows/ ~/.gemini/workflows
+     ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates
+     ln -s ~/projects/ag-setup/workflows/ ~/.gemini/config/workflows
      ```
-  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly available globally in `~/.gemini/templates/` without manual cloning or pulling.*
+  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly available globally in `~/.gemini/config/templates/` without manual cloning or pulling.*
 
 ---
 

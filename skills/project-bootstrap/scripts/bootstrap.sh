@@ -67,7 +67,7 @@ if [[ "$PROJECT_NAME" =~ ^[./] ]]; then
 else
   PROJECT_DIR="$HOME/projects/$PROJECT_NAME"
 fi
-TEMPLATES_DIR="${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/templates}/$PROCESS_SLUG"
+TEMPLATES_DIR="${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/config/templates}/$PROCESS_SLUG"
 
 # 1. Validation Checks
 if [ -d "$PROJECT_DIR" ]; then
@@ -77,9 +77,9 @@ fi
 
 if [ ! -d "$TEMPLATES_DIR" ]; then
   log_err "Process template not found: $TEMPLATES_DIR"
-  log_err "Please ensure your templates are symlinked to ~/.gemini/templates/ first:"
-  log_err "  mkdir -p ~/.gemini/"
-  log_err "  ln -s ~/projects/ag-setup/templates/ ~/.gemini/templates"
+  log_err "Please ensure your templates are symlinked to ~/.gemini/config/templates/ first:"
+  log_err "  mkdir -p ~/.gemini/config/"
+  log_err "  ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates"
   exit 1
 fi
 

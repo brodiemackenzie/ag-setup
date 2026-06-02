@@ -14,7 +14,7 @@ The custom architecture operates on two levels: the **Global Layer** (system-wid
 graph TD
     subgraph Global [Global Layer (~/.gemini/)]
         A[Global project-bootstrap Skill] -->|Executes bootstrap.sh| B[Target Workspace Folder]
-        SL[~/.gemini/templates/] -->|Symlinked to local workspace| C
+        SL[~/.gemini/config/templates/] -->|Symlinked to local workspace| C
     end
     
     subgraph Local [Local Layer (~/projects/my-app/)]
@@ -88,14 +88,14 @@ To install these templates globally so you can use the bootstrapper CLI to initi
 
 1. **Create the Global Antigravity Folder**:
    ```bash
-   mkdir -p ~/.gemini/
+   mkdir -p ~/.gemini/config/
    ```
 2. **Symlink Your Workspace Templates & Workflows**:
    ```bash
-   ln -s ~/projects/ag-setup/templates/ ~/.gemini/templates
-   ln -s ~/projects/ag-setup/workflows/ ~/.gemini/workflows
+   ln -s ~/projects/ag-setup/templates/ ~/.gemini/config/templates
+   ln -s ~/projects/ag-setup/workflows/ ~/.gemini/config/workflows
    ```
-   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting.*
+   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'templates' or 'workflows' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
 ---
 

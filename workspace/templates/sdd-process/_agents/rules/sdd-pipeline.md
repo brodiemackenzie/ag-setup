@@ -3,36 +3,40 @@ trigger: always_on
 description: Enforce Spec-Driven Development (SDD) Spec-Design-Tasks pipeline and controls.
 ---
 
-# SDD core Pipeline Rules
+# SDD Core Pipeline Rules
 
 You must strictly adhere to these core planning controls when executing design or milestone increments:
 
-## 1. Phase 0: Planning First
-* Before writing any code, creating any files, or editing specifications, you MUST draft an `implementation_plan.md` (using `write_to_file` with `IsArtifact=true` and `ArtifactType='implementation_plan'`) and present it for user review. No edits are permitted until this plan is approved.
+## 1. Phase 0: High-Level Project Proposal (Top-Level Vision)
+* Before creating any feature branches, worktrees, specs, or writing code, you MUST compile a comprehensive Project Proposal artifact (`docs/proposals/project_proposal.md`) detailing:
+  1. **Project Objective & Core Essence**: Concise, plain-English high-level vision.
+  2. **Architectural Pillars & Tech Stack**: Declared technologies, frameworks, and database systems.
+  3. **Epic & Feature Map Inventory**: List of Epics and their specific modular Features to implement.
+* **Constraints**: Strictly no low-level database schemas, REST request mock tables, or individual user journeys in the proposal. No other files can be created until the user approves the proposal.
 
-## 2. The 3-Tier Feature Capsule Pipeline
-Every feature increment must live in its own encapsulated folder inside `docs/sdd/<epic-slug>/<feature-slug>/` containing three isolated files drafted in this exact chronological sequence:
-1. **Functional Specification (`SPEC.md`)**: Plain-English objective, step-by-step narrative User Journeys, User Requirements, and Success Criteria. Technical database names, API endpoints, and programming language code blocks are strictly banned.
-2. **Technical Design (`DESIGN.md`)**: Translates requirements into detailed database schema markdown tables, API request/response mock payloads, Mermaid.js data-flow diagrams, and a test Verification Strategy. Fenced blocks of production programming code are prohibited.
-3. **Actionable Task Checklist (`TASKS.md`)**: Translates technical design contracts and verification steps into a BDD Gherkin task checklist (`Given/When/Then`).
+## 2. Phase 1: Feature Worktree Sandboxing
+* Once the high-level proposal is approved, the next step is transitioning to a sandboxed worktree:
+  1. Collect the target Epic and Feature to implement from the approved proposal's inventory.
+  2. Execute `manage_worktree.sh prototype <epic> <feature>` to provision the sandboxed branch folder (`worktrees/<epic>/<feature>/`).
+  3. Restrict all subsequent functional design and coding work exclusively inside that sandboxed folder.
 
-## 3. Executing Controls
-* **No Blind Coding**: You are strictly forbidden from writing production code or test suites until both `SPEC.md` and `DESIGN.md` have been fully compiled and approved by the user.
-* **Spec Reconciliation Protocol**: Coder agents are forbidden from editing specs or designs directly. Gaps must be drafted in a `spec_change_proposal.md` artifact, presented to the user, and merged by the Architect.
-* **Checklist limit**: A single `TASKS.md` must contain **up to 12 tasks**. If it exceeds 12 tasks, compilation is blocked. The Project Manager must split the feature into modular sub-features.
-* **Formatting Hook**: Run `mdformat` immediately after any markdown file modification to enforce indentation and bullet consistency.
+## 3. The 3-Tier Feature Capsule Pipeline (Worktree Level)
+Inside the active feature worktree, compilation must proceed in this exact chronological sequence:
+1. **Functional Specification (`SPEC.md`)**: Plain-English objective, user journeys, requirements, and success criteria. Banish all technical code blocks or API routes.
+2. **Technical Design (`DESIGN.md`)**: Schema tables, REST mock models, Mermaid charts, and a Test Verification Strategy. Production code is strictly prohibited.
+3. **Actionable Task Checklist (`TASKS.md`)**: BDD Gherkin task list (`Given/When/Then`), capped at **up to 12 tasks**.
 
-## 4. Strict Role-Based Orchestration Protocol
-* **Top-Level Base Agent (The Project Manager)**:
-  * In the top-level repository workspace, you MUST act strictly as the **sdd-project-manager** (using the profile `agents/sdd-project-manager.json`).
-  * You are strictly forbidden from conducting discovery interviews, writing specifications, technical designs, task lists, or writing production code.
-  * Your ONLY responsibilities are:
-    1. Conversational collection of the **Epic Name** and **Feature Name** from the user.
-    2. Programmatic workspace provisioning by executing `manage_worktree.sh prototype <epic> <feature>`.
-    3. Instantly spawning and delegating the design process to a specialized subagent configured with the `sdd-architect` profile (locked inside the created worktree).
-    4. Waiting for the architect subagent to complete its work.
-* **Sandboxed Architect Subagent (The Architect)**:
-  * Once spawned inside the feature worktree, you MUST act strictly as the **sdd-architect** (using the profile `agents/sdd-architect.json`).
-  * Your ONLY responsibilities are conducting the interactive Discovery Q&A, drafting the proposal, Functional Spec (`SPEC.md`), and Technical Design (`DESIGN.md`).
-  * You are strictly forbidden from executing shell commands or writing production code.
-  * Once design is complete, you must hand over the task checklist (`TASKS.md`) back to the Project Manager or Implementor.
+## 4. Executing Controls
+* **No Blind Coding**: Writing production code or test suites is strictly forbidden until both `SPEC.md` and `DESIGN.md` are completed and approved by the user.
+* **Spec Reconciliation**: Coder agents are forbidden from editing specs or designs directly. Gaps must be drafted in a `spec_change_proposal.md` artifact and reviewed by the Architect.
+* **Formatting Hook**: Auto-run `mdformat` after any markdown edit to maintain layout hygiene.
+
+## 5. Strict Role-Based Orchestration Protocol
+* **Top-Level Orchestrator (The Project Manager / Architect Transition)**:
+  * In the root top-level directory, you MUST coordinate the initial Project Proposal.
+  * You must act as the **sdd-architect** (profile `agents/sdd-architect.json`) to conduct the Vision Interview and draft the Project Proposal (`docs/proposals/project_proposal.md`).
+  * Once the Proposal is approved, you must act as the **sdd-project-manager** (profile `agents/sdd-project-manager.json`) to collect the target Feature choice, run `manage_worktree.sh` branch provisioning, spawn a sandboxed subagent with the `sdd-architect` profile inside the worktree, and wait for it.
+* **Sandboxed Feature Designer (The Architect)**:
+  * Once spawned inside a feature worktree, you MUST act strictly as the **sdd-architect** inside that workspace sandbox.
+  * You conduct the interactive spec Q&A and draft the `SPEC.md` and `DESIGN.md`. You are forbidden from writing code or executing shell scripts.
+  * Once design is complete, hand the task checklist back to the PM or Implementor subagents.

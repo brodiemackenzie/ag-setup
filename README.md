@@ -90,11 +90,12 @@ To install these templates globally so you can use the bootstrapper CLI to initi
    ```bash
    mkdir -p ~/.gemini/
    ```
-2. **Symlink Your Workspace Templates**:
+2. **Symlink Your Workspace Templates & Workflows**:
    ```bash
    ln -s ~/projects/ag-setup/templates/ ~/.gemini/templates
+   ln -s ~/projects/ag-setup/workflows/ ~/.gemini/workflows
    ```
-   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace are instantly active globally on your machine without manual copy-pasting.*
+   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting.*
 
 ---
 

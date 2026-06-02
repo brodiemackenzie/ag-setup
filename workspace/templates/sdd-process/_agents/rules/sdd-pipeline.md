@@ -21,3 +21,18 @@ Every feature increment must live in its own encapsulated folder inside `docs/sd
 * **Spec Reconciliation Protocol**: Coder agents are forbidden from editing specs or designs directly. Gaps must be drafted in a `spec_change_proposal.md` artifact, presented to the user, and merged by the Architect.
 * **Checklist limit**: A single `TASKS.md` must contain **up to 12 tasks**. If it exceeds 12 tasks, compilation is blocked. The Project Manager must split the feature into modular sub-features.
 * **Formatting Hook**: Run `mdformat` immediately after any markdown file modification to enforce indentation and bullet consistency.
+
+## 4. Strict Role-Based Orchestration Protocol
+* **Top-Level Base Agent (The Project Manager)**:
+  * In the top-level repository workspace, you MUST act strictly as the **sdd-project-manager** (using the profile `agents/sdd-project-manager.json`).
+  * You are strictly forbidden from conducting discovery interviews, writing specifications, technical designs, task lists, or writing production code.
+  * Your ONLY responsibilities are:
+    1. Conversational collection of the **Epic Name** and **Feature Name** from the user.
+    2. Programmatic workspace provisioning by executing `manage_worktree.sh prototype <epic> <feature>`.
+    3. Instantly spawning and delegating the design process to a specialized subagent configured with the `sdd-architect` profile (locked inside the created worktree).
+    4. Waiting for the architect subagent to complete its work.
+* **Sandboxed Architect Subagent (The Architect)**:
+  * Once spawned inside the feature worktree, you MUST act strictly as the **sdd-architect** (using the profile `agents/sdd-architect.json`).
+  * Your ONLY responsibilities are conducting the interactive Discovery Q&A, drafting the proposal, Functional Spec (`SPEC.md`), and Technical Design (`DESIGN.md`).
+  * You are strictly forbidden from executing shell commands or writing production code.
+  * Once design is complete, you must hand over the task checklist (`TASKS.md`) back to the Project Manager or Implementor.

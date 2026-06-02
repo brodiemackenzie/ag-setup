@@ -144,12 +144,19 @@ else
   log "Note: JetSki IDE command-line launcher not found. Please open $PROJECT_DIR manually."
 fi
 
-# 9. Pre-populate a new conversation session in the Agent Manager
+# 9. Pre-populate a new conversation session in the Agent Manager (Synchronous & Fast)
 CLI_PATH="/google/bin/releases/jetski-devs/tools/cli"
 if [ -f "$CLI_PATH" ]; then
-  log "Pre-populating a new conversation session in your Agent Manager..."
-  INIT_PROMPT="Help me begin the Spec-Driven Development process! What would you recommend doing first?"
-  (cd "$PROJECT_DIR" && "$CLI_PATH" -p "$INIT_PROMPT" >/dev/null 2>&1) &
+  log "Pre-populating a new conversation session in your Agent Manager (takes ~8s)..."
+  INIT_PROMPT="Hello! I have successfully bootstrapped this workspace. Please respond ONLY with a beautiful, clean greeting welcoming me, and list these exact three choices for what we can do next:
+1. Type **'/proposal'** or ask me to start the discovery process to draft the project specification.
+2. Ask me to inspect or refine files inside the workspace.
+3. Check out the scaffolded technology stack structures.
+
+Do NOT run any other commands, tools, or subagents."
+  
+  # Run synchronously to ensure the log is fully written before bootstrapper finishes
+  (cd "$PROJECT_DIR" && "$CLI_PATH" -p "$INIT_PROMPT" >/dev/null 2>&1) || true
 fi
 
 log "Next steps: Switch to your new IDE window, or open your Agent Manager to resume the pre-populated '$PROJECT_NAME' conversation!"

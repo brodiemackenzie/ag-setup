@@ -24,10 +24,11 @@ Instructions:
 4. **Present Success & Transition Workspace**:
    * Show the successful shell output logs to the user.
    * Confirm that the script has automatically opened a new JetSki window matching the project folder using the JetSki CLI launcher.
+   * Advise the user that a new conversation session has been automatically pre-populated in their **Agent Manager** window and is immediately ready to resume.
    * Direct the user to:
-     1. Switch to the newly opened IDE window.
-     2. Open a new chat session (which will automatically be named after the project workspace).
-     3. Ask their new agent to start the discovery process (e.g., "Help me draft the project proposal") to begin the Spec-Driven Development functional journey.
+     1. Switch to the newly opened IDE window, OR open their **Agent Manager** window.
+     2. Locate and resume the pre-populated conversation session.
+     3. Ask the new agent to trigger the discovery process (e.g., "Let's begin the SDD proposal interview!") to start the functional journey.
 
 Constraints:
 * Only use the instructions in this file when bootstrapping a new project.

@@ -144,4 +144,12 @@ else
   log "Note: JetSki IDE command-line launcher not found. Please open $PROJECT_DIR manually."
 fi
 
-log "Next steps: Switch to your new window, start a new chat, and begin the SDD discovery process!"
+# 9. Pre-populate a new conversation session in the Agent Manager
+CLI_PATH="/google/bin/releases/jetski-devs/tools/cli"
+if [ -f "$CLI_PATH" ]; then
+  log "Pre-populating a new conversation session in your Agent Manager..."
+  INIT_PROMPT="Help me begin the Spec-Driven Development process! What would you recommend doing first?"
+  (cd "$PROJECT_DIR" && "$CLI_PATH" -p "$INIT_PROMPT" >/dev/null 2>&1) &
+fi
+
+log "Next steps: Switch to your new IDE window, or open your Agent Manager to resume the pre-populated '$PROJECT_NAME' conversation!"

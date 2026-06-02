@@ -27,6 +27,8 @@ Inside the active feature worktree, compilation must proceed in this exact chron
 3. **Actionable Task Checklist (`TASKS.md`)**: BDD Gherkin task list (`Given/When/Then`), capped at **up to 12 tasks**.
 
 ## 4. Executing Controls
+* **Skill-First Discovery Hook (CRITICAL)**: Before starting *any* SDD phase (e.g., drafting a proposal in Phase 0, writing specifications in Phase 2, compiling designs in Phase 3, or executing tasks in Phase 4), you **MUST proactively scan the `.agents/skills/` folder** in your active workspace, locate the specialized playbook folder governing the phase, and read its `SKILL.md` in full before executing any actions or conversational interviews.
+* **No Eager Execution**: You are strictly forbidden from relying solely on high-level rule outlines. You must verify and read the specific local `SKILL.md` first to ensure 100% compliance with the workspace's custom playbooks, and declare explicitly in your first chat response that you have loaded and are executing that skill playbook.
 * **No Blind Coding**: Writing production code or test suites is strictly forbidden until both `SPEC.md` and `DESIGN.md` are completed and approved by the user.
 * **Spec Reconciliation**: Coder agents are forbidden from editing specs or designs directly. Gaps must be drafted in a `spec_change_proposal.md` artifact and reviewed by the Architect.
 * **Formatting Hook**: Auto-run `mdformat` after any markdown edit to maintain layout hygiene.

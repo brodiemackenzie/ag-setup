@@ -77,6 +77,8 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 │   │   └── vibe-coding/                      # Rapid Prototyping Vibe-Coding Template (Example)
 │   │       └── _agents/                      # Custom Vibe-Coding Rules & Agent Capsules
 └── global/
+    ├── rules/                            # Global always-on rules and quality guidelines
+    │   └── global-sdd-rules.md
     └── skills/
         └── project-bootstrap/            # Global Scaffolder Skill (Stored in user home directory)
             ├── README.md
@@ -139,12 +141,13 @@ A unified installer designed to initialize standard workspaces either via intera
      ```bash
      mkdir -p ~/.gemini/config/
      ```
-  2. Symlink the local templates and workflows folders directly to the global directories:
+  2. Symlink the local templates, workflows, and rules folders directly to the global directories:
      ```bash
      ln -s ~/projects/ag-setup/workspace/ ~/.gemini/config/workspace
      ln -s ~/projects/ag-setup/global/global_workflows/ ~/.gemini/config/global_workflows
+     ln -s ~/projects/ag-setup/global/rules/ ~/.gemini/config/rules
      ```
-  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly available globally in `~/.gemini/config/workspace/` without manual cloning or pulling.*
+  *This guarantees that any edits the agent makes locally inside the `ag-setup` workspace are instantly active globally without manual cloning or pulling.*
 
 ---
 

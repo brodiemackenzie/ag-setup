@@ -54,6 +54,8 @@ ag-setup/
 ├── global/                                 # GLOBAL LAYER (Linked system-wide to ~/.gemini/)
 │   ├── global_workflows/
 │   │   └── bootstrap.md                    # The conversational /bootstrap command
+│   ├── rules/
+│   │   └── global-sdd-rules.md             # Global SDD always-on rules and guidelines
 │   └── skills/
 │       └── project-bootstrap/
 │           ├── README.md                   # Bootstrapper CLI manual
@@ -94,12 +96,13 @@ To install these templates globally so you can use the bootstrapper CLI to initi
    ```bash
    mkdir -p ~/.gemini/config/
    ```
-2. **Symlink Your Workspace Templates & Workflows**:
+2. **Symlink Your Workspace Templates, Workflows & Rules**:
    ```bash
    ln -s ~/projects/ag-setup/workspace/ ~/.gemini/config/workspace
    ln -s ~/projects/ag-setup/global/global_workflows/ ~/.gemini/config/global_workflows
+   ln -s ~/projects/ag-setup/global/rules/ ~/.gemini/config/rules
    ```
-   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as workspace template modifications or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'workspace' or 'global_workflows' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
+   *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as workspace template modifications, rules, or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'workspace', 'global_workflows', or 'rules' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
 ---
 

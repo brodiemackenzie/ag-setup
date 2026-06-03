@@ -8,7 +8,7 @@ It establishes an absolute separation of concerns by enforcing a strict **Specif
 
 ## 🏛️ Architecture Overview
 
-The custom architecture operates on two levels: the **Global Layer** (system-wide installers and templates) and the **Local Layer** (project-specific sandboxed runtimes).
+The custom architecture operates on two levels: the **Global Layer** (system-wide installers and templates) and the **Local Layer** (project-specific sandboxed runtimes). For an in-depth guide on JetSki agent profiles, rules, skills, and sandboxed communication lifecycle, read the [Core Agent Framework Manual](file:///usr/local/google/home/brodiem/projects/ag-setup/docs/agent_framework_manual.md).
 
 ```mermaid
 graph TD
@@ -49,13 +49,16 @@ graph TD
 ag-setup/
 ├── README.md                               # This onboarding manual and guide
 ├── jetski_customization_plan.md            # Detailed Antigravity customization plan
+├── docs/
+│   ├── PROJECT.md                          # High-Level Project Guiding Document
+│   └── agent_framework_manual.md           # Core JetSki & Antigravity Agentic Framework Manual
 ├── sandbox/                                # Git-ignored sandbox directory for local dry-run tests
 │   └── mock-project/                       # Clean bootstrapped mock project replica
 ├── global/                                 # GLOBAL LAYER (Linked system-wide to ~/.gemini/)
 │   ├── global_workflows/
 │   │   └── bootstrap.md                    # The conversational /bootstrap command
 │   ├── rules/
-│   │   └── global-sdd-rules.md             # Global SDD always-on rules and guidelines
+│   │   └── global-rules.md                 # Global always-on rules and guidelines
 │   └── skills/
 │       └── project-bootstrap/
 │           ├── README.md                   # Bootstrapper CLI manual
@@ -77,7 +80,7 @@ ag-setup/
                     ├── docs-compiler/          # Standalone offline wiki compiler
                     ├── document-editor/        # Surgical Anchor-and-Verify markdown editor
                     ├── sdd-design-architect/   # Schemas, contracts, & ADR triggers
-                    ├── sdd-proposal-drafter/   # executive summary & Epic layouts
+                    ├── sdd-project-blueprint/  # docs/PROJECT.md & Epic layouts
                     ├── sdd-retrospective/      # Post-merge git parsing & lessons learned appending
                     ├── sdd-spec-writer/        # Discovery specs Q&A interviews
                     ├── sdd-task-generator/     # BDD Gherkin checklist compilers (12-task limit)

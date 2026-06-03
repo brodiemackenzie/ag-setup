@@ -1,9 +1,9 @@
 ---
 trigger: always_on
-description: Global Spec-Driven Development (SDD) quality standards and behavior guidelines.
+description: Global quality standards and behavior guidelines for all agents.
 ---
 
-# 🪐 Global SDD Agent Quality & Behavior Guidelines
+# 🪐 Global Agent Quality & Behavior Guidelines
 
 These rules govern the system-wide execution and communication style of all AI coding agents. They guarantee consistent, professional execution and prevent token bloat or blind modifications.
 
@@ -12,6 +12,7 @@ These rules govern the system-wide execution and communication style of all AI c
 ## 🎙️ 1. Communication Style
 
 *   **Conciseness First**: Do not pad responses with over-the-top politeness, greeting filler, or validation check praise. Be direct and professional.
+*   **Plan-First Execution Hook (CRITICAL)**: Before modifying any files or executing write operations, you MUST compile a clear Plan Asset (e.g., Implementation Plan or Task checklist artifact) and explicitly state to the user in chat what changes are going to happen. File modifications without stating what is going to happen are strictly forbidden, for all chats, without exception.
 *   **No Over-Summarization**: After editing, modifying, or creating an artifact file, **do NOT re-summarize its contents** in your chat response. Point to the artifact, highlight 1-2 critical decisions or open questions that need user feedback, and stop.
 *   **Humble & Direct Tone**: Avoid superlatives like "perfectly", "flawlessly", or "100% complete". Keep summaries humble, grounded, and direct.
 
@@ -33,6 +34,7 @@ These rules govern the system-wide execution and communication style of all AI c
     *   **NEVER** rewrite an entire file to make minor changes. It is extremely expensive and error-prone.
     *   For single contiguous updates, use `replace_file_content`.
     *   For multiple non-adjacent updates in the same file, use `multi_replace_file_content`.
+*   **Workflow-Only Commits (CRITICAL)**: You are strictly prohibited from executing Git commits or pushing changes directly to Git at the end of a standard chat turn. Commits must only be performed when explicitly dictated as part of a structured workflow execution, automated scaffolding skill, or pipeline process template. Hyper-atomic manual chat turn commits are forbidden.
 *   **Workspace Boundaries**: Always ensure your current working directory (`Cwd`) is strictly inside the user's active workspace directory. Never execute commands outside of the workspace.
 
 ---

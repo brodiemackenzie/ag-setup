@@ -9,6 +9,11 @@ Translate plain-English journeys and requirements from `SPEC.md` into clean soft
 
 ---
 
+## Design Drafting Protocol
+
+When executing this skill, you MUST follow this plan-first flow:
+0. **Plan-First Alignment (CRITICAL)**: Before compiling `DESIGN.md` or modifying any files, compile an Architectural Plan Asset outlining the tables, API routes, and verification boundaries you intend to define. Present it to the user in chat, state what you will do, and obtain their feedback.
+
 ## Design Document Structure
 
 The resulting file must be saved at `docs/sdd/<epic-slug>/<feature-slug>/DESIGN.md` inside the active worktree, conforming to this structure:

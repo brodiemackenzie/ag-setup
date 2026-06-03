@@ -17,7 +17,7 @@
   },
   "permissions": {
     "write_paths": [
-      "./docs/proposals/*",
+      "./docs/PROJECT.md",
       "./docs/sdd/*",
       "./docs/adr/*"
     ]

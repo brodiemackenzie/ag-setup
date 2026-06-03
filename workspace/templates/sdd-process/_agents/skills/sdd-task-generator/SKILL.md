@@ -11,7 +11,7 @@ Translate the architecture contracts and Verification Strategy from `DESIGN.md` 
 
 ## Checklist Document Structure
 
-The resulting file must be saved at `docs/sdd/<epic-slug>/<feature-slug>/TASKS.md` inside the active worktree capsule, conforming strictly to this structure:
+The resulting file must be saved at `docs/sdd/<epic-key>/<feat-key>/TASKS.md` in the parent repository, conforming strictly to this structure:
 
 ```markdown
 # Actionable Tasks: [Feature Title in Title Case]
@@ -20,22 +20,23 @@ This document tracks the TDD implementation steps. Tasks must be checked off seq
 
 ---
 
-## Epic: [Epic Title]
-## Feature: [Feature Title]
+## Epic: ep-[epic-slug] ([Epic Title])
+## Feature: ft-[feature-slug] ([Feature Title])
 
 ---
 
 ## Gherkin BDD Checklist
 
-- [ ] **Task 1: [Ref: SubsystemNode] Description of Deliverable**
+- [ ] **tsk-[task_name] ([Ref: SubsystemNode] Description of Deliverable)**
   * **Given** [Initial system state or mock configurations]
   * **When** [Action performed by user or test trigger]
   * **Then** [Expected outcome and assertions]
-  
-- [ ] **Task 2: [Ref: SubsystemNode] Description**
-  * **Given** ...
-  * **When** ...
-  * **Then** ...
+
+  *Example*:
+- [ ] **tsk-connect-to-server ([Ref: MCP Client] Connect to Server)**
+  * **Given** MCP server runs on Port 4040
+  * **When** The gateway starts up
+  * **Then** A socket connection is successfully established and kept alive
 ```
 
 ---

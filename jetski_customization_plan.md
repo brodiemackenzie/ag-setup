@@ -52,7 +52,7 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 │   │   │       │   │   ├── SKILL.md
 │   │   │       │   │   └── scripts/
 │   │   │       │   │       └── manage_worktree.sh
-│   │   │       │   ├── sdd-proposal-drafter/ # Interview & Proposal playbook (Vision Essence)
+│   │   │       │   ├── sdd-project-blueprint/ # Interview & docs/PROJECT.md playbook (Vision Essence)
 │   │   │       │   │   └── SKILL.md
 │   │   │       │   ├── sdd-spec-writer/      # Interactive Spec Writer (Q&A Functional Journeys)
 │   │   │       │   │   └── SKILL.md
@@ -78,7 +78,7 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 │   │       └── _agents/                      # Custom Vibe-Coding Rules & Agent Capsules
 └── global/
     ├── rules/                            # Global always-on rules and quality guidelines
-    │   └── global-sdd-rules.md
+    │   └── global-rules.md
     └── skills/
         └── project-bootstrap/            # Global Scaffolder Skill (Stored in user home directory)
             ├── README.md
@@ -131,7 +131,7 @@ A unified installer designed to initialize standard workspaces either via intera
      ```bash
      rsync -av --exclude='.git' "~/.gemini/config/templates/<process_slug>/_agents/" "~/projects/<project_name>/.agents/"
      ```
-  6. **SDD Interview Trigger**: Automatically launches the initial speculative interview to draft the high-level project proposal.
+  6. **SDD Interview Trigger**: Automatically launches the initial speculative interview to draft the high-level PROJECT.md blueprint.
 
 ### 2. Version-Controlled Configuration Repository
 * **Mechanism**: All templates are version-controlled in the project's root `templates/` directory and pushed to a private GitHub repository (`brodiem/ag-setup`).
@@ -156,12 +156,11 @@ A unified installer designed to initialize standard workspaces either via intera
 To guarantee absolute architectural consistency, the design process is broken down into a sequential, multi-stage pipeline where each step is powered by a **highly specialized custom skill**.
 
 ### The 3-Tier Feature Lifecycle:
-`Interactive Interview ➔ 1. Proposal (Essence) ➔ 2. Spec (Journeys) ➔ 3. Design (Architecture) ➔ 4. Tasks (BDD Cards) ➔ 5. Code & Test`
+`Interactive Interview ➔ 1. Project Blueprint (docs/PROJECT.md) ➔ 2. Spec (Journeys) ➔ 3. Design (Architecture) ➔ 4. Tasks (BDD Cards) ➔ 5. Code & Test`
 
 ```
 docs/
-├── proposals/
-│   └── project_proposal.md                   # High-Level Project Vision
+├── PROJECT.md                                # High-Level Project Guiding Document
 └── sdd/
     └── <epic-slug>/
         ├── adr/                              # Epic-specific architectural decisions
@@ -174,13 +173,16 @@ docs/
 
 ---
 
-### 1. The Proposal Drafter Skill (`skills/sdd-proposal-drafter/`)
-Governs the transition from **Interview ➔ Proposal**.
+### 1. The Project Blueprint Skill (`skills/sdd-project-blueprint/`)
+Governs the transition from **Interview ➔ Project Blueprint**.
 * **Interview Playbook**: The agent conducts a structured, conversational interview about project goals and tech stacks.
-* **Proposal Template**: Generates a high-level, brief `docs/proposals/<project_name>_proposal.md` outlining ONLY:
-  * *Project Objective & Essence*
-  * *Architectural Pillars & Target Tech Stack*
-  * *Epic & Feature Map Inventory*
+* **Blueprint Template**: Generates a high-level `docs/PROJECT.md` outlining ONLY:
+  * *Core Objective*
+  * *Target Audience & Success Criteria*
+  * *Core Features & Out of Scope boundaries*
+  * *High-Level Tech Stack*
+  * *Epic & Feature Component Breakdown*
+  * *Open Questions*
 * **Banned Content**: Database schemas, REST parameters, and detailed user journeys.
 
 ---
@@ -230,9 +232,6 @@ The agent must adhere to these strict structural layout rules inside `.agents/ru
 ### 2. The "Anchor-and-Verify" Playbook (`skills/document-editor/`)
 A specialized markdown editing skill that teaches the agent to read outlines, locate exact line ranges surgically, and apply replacements without corrupting surrounding formats.
 
-### 3. Automated Markdown Formatting (Tool Layer)
-* **Tooling**: Integrated use of **`mdformat`** (opinionated Markdown formatter) inside the local environment.
-* **Automation Hook**: The `sdd-project-manager` runs `mdformat <path_to_file>` immediately after *every* specification, design, or task file modification, correcting misaligned tables, broken indentation, and inconsistent list bullets.
 
 ---
 
@@ -305,8 +304,8 @@ Testing structures are cleanly decoupled to prevent slow system integration runs
 To prevent Git merge conflicts across isolated worktrees, ADRs are saved in a hierarchical folder layout matching the Epic/Feature context:
 ```
 docs/
+├── PROJECT.md                        # Global Project Blueprint
 └── sdd/
-    ├── proposals/
     └── <epic-slug>/
         ├── adr/                      # Epic-specific ADRs
         │   └── 0001-database.md

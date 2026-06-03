@@ -33,8 +33,12 @@ SUBCOMMAND="$1"
 EPIC_SLUG="$2"
 FEATURE_SLUG="$3"
 
-WORKTREE_PATH="worktrees/$EPIC_SLUG/$FEATURE_SLUG"
-BRANCH_NAME="feature/$EPIC_SLUG/$FEATURE_SLUG"
+# Resolve parent Git root and Project Name
+PARENT_ROOT="$(git rev-parse --show-toplevel)"
+PROJECT_NAME="$(basename "$PARENT_ROOT")"
+
+WORKTREE_PATH="$HOME/.gemini/jetski/worktrees/$PROJECT_NAME/${EPIC_SLUG}-${FEATURE_SLUG}"
+BRANCH_NAME="${EPIC_SLUG}-${FEATURE_SLUG}"
 
 # Verify we are in a Git repository
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -53,57 +57,17 @@ case "$SUBCOMMAND" in
     # Add Git worktree
     git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH"
 
-    # Go into worktree to scaffold templates
-    cd "$WORKTREE_PATH"
+    log "Worktree provisioning complete! Workspace ready for implementation."
 
-    # Create feature capsule folder
-    CAPSULE_DIR="docs/sdd/$EPIC_SLUG/$FEATURE_SLUG"
-    log "Scaffolding capsule folder inside worktree at '$CAPSULE_DIR'..."
-    mkdir -p "$CAPSULE_DIR"
-
-    # Write blank SPEC.md template
-    cat << 'EOF' > "$CAPSULE_DIR/SPEC.md"
-# Specification: [Feature Title]
-
-## 1. Objective
-Brief plain-English objective of the feature.
-
-## 2. User Journeys
-* Journey-1: Describe narrative step-by-step user interactions here.
-
-## 3. User Requirements
-* Req-1: Explicit plain-English functional requirement.
-
-## 4. Success Criteria
-* Criteria-1: Verification scenario describing how user verifies the feature is complete.
-EOF
-
-    # Write blank DESIGN.md template
-    cat << 'EOF' > "$CAPSULE_DIR/DESIGN.md"
-# Technical Design: [Feature Title]
-
-## 1. API & Database Contracts
-Represent schemas and payloads using static tables or mock JSON blocks.
-
-## 2. Architecture Diagrams
-```mermaid
-graph TD
-    A[User Interface] -->|Action| B[Application Logic]
-```
-
-## 3. Verification Strategy
-List the unit and integration test scenarios the implementor must write.
-EOF
-
-    # Write blank TASKS.md template
-    cat << 'EOF' > "$CAPSULE_DIR/TASKS.md"
-# Actionable Tasks: [Feature Title]
-
-## Gherkin Execution checklist
-* [ ] [Ref: Node-A] Given context, When action, Then outcome.
-EOF
-
-    log "Scaffolding complete! Sandboxed Feature Capsule is ready for planning."
+    # Launch new JetSki workspace window
+    JETSKI_CLI="/opt/jetski-ide/bin/jetski"
+    if [ -f "$JETSKI_CLI" ]; then
+      log "Launching new JetSki IDE window for worktree sandbox: $WORKTREE_PATH..."
+      # Run in background asynchronously so script exits immediately
+      "$JETSKI_CLI" -n "$WORKTREE_PATH" &
+    else
+      log "Note: JetSki IDE command-line launcher not found. Please open $WORKTREE_PATH manually."
+    fi
     ;;
 
   link-env)
@@ -117,26 +81,26 @@ EOF
     cd "$WORKTREE_PATH"
 
     # 1. Node.js / NPM Linkage
-    if [ -f "../../package.json" ] || [ -d "../../node_modules" ]; then
+    if [ -f "$PARENT_ROOT/package.json" ] || [ -d "$PARENT_ROOT/node_modules" ]; then
       log "Node.js detected. Symlinking node_modules..."
       rm -rf node_modules
-      ln -sf ../../../node_modules ./node_modules
+      ln -sf "$PARENT_ROOT/node_modules" ./node_modules
     fi
 
     # 2. Python Virtualenv Linkage
-    if [ -d "../../.venv" ]; then
+    if [ -d "$PARENT_ROOT/.venv" ]; then
       log "Python detected. Inheriting main virtualenv packages..."
       rm -rf .venv
       python3 -m venv --system-site-packages .venv
     fi
 
     # 3. Rust Cargo target Linkage
-    if [ -f "../../Cargo.toml" ]; then
+    if [ -f "$PARENT_ROOT/Cargo.toml" ]; then
       log "Rust detected. Symbolic linking target directories..."
       mkdir -p target
       # Link cargo target to avoid clean compile overheads
-      mkdir -p ../../target/worktrees_cargo/"$EPIC_SLUG"_"$FEATURE_SLUG"
-      ln -sf ../../../target/worktrees_cargo/"$EPIC_SLUG"_"$FEATURE_SLUG" ./target
+      mkdir -p "$PARENT_ROOT/target/worktrees_cargo/${EPIC_SLUG}_${FEATURE_SLUG}"
+      ln -sf "$PARENT_ROOT/target/worktrees_cargo/${EPIC_SLUG}_${FEATURE_SLUG}" ./target
     fi
 
     log "Binds complete! Workspace environment successfully configured."

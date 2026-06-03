@@ -12,6 +12,7 @@ Compile a comprehensive, plain-English Functional Specification document definin
 ## The Spec Discovery Interview Protocol
 
 Before drafting `SPEC.md`, the agent must gather precise business rules from the user:
+0. **Plan-First Alignment (CRITICAL)**: Before conducting the spec discovery or drafting any markdown files, compile a Plan Asset outlining the target user scenarios you plan to cover, present it to the user in chat, and obtain clear direction.
 1. **Targeted Spec Q&A**: Formulate **3-5 highly targeted, technical-functional questions** regarding the feature's user experience.
 2. **Scope Focus**:
    * *Error Handling*: What should happen if an validation fails or a service is offline?
@@ -40,8 +41,9 @@ A set of narrative step-by-step scenarios describing exactly how users interact 
 
 ## 3. User Requirements
 Explicit, numbered functional rules that the implementation must enforce:
-1. **Req-1 (Requirement Title)**: Detail of the functional rule.
-2. **Req-2 (Requirement Title)**: Detail of the functional rule.
+1. **req-[requirement_name] ([Requirement Title])**: Detail of the functional rule.
+   * *Example*: **req-connection-retry (Connection Retry)**: Re-establish connection if Malloy publisher drops offline.
+2. **req-[requirement_name] ([Requirement Title])**: Detail.
 
 ## 4. Success Criteria
 Plain-English definitions of done mapping back to user verification:

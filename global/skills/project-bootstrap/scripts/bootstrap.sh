@@ -103,7 +103,6 @@ elif [ "$SCAFFOLD" = "python" ]; then
   echo "# Requirements" > requirements.txt
   echo "pytest" >> requirements.txt
   echo "pydocstyle" >> requirements.txt
-  echo "mdformat" >> requirements.txt
   echo "src/" > .gitignore
   echo ".venv/" >> .gitignore
   echo "__pycache__/" >> .gitignore

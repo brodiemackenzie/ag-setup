@@ -5,7 +5,7 @@ This playbook teaches the agent surgical, high-precision editing patterns for Ma
 ---
 
 ## Objective
-Perform clean text modifications, append items to specific headers surgically (no blind append-to-end), synchronize Tables of Contents, re-number ordered lists, and run formatting linters.
+Perform clean text modifications, append items to specific headers surgically (no blind append-to-end), synchronize Tables of Contents, and re-number ordered lists.
 
 ---
 
@@ -33,9 +33,3 @@ To maintain professional documentation, you must strictly follow these rules:
 ### 3. Table of Contents Synchronization
 * If you add, rename, or delete any markdown header (`#`, `##`, `###`), you must update the Table of Contents at the top of the document to accurately reflect the new structure and target links.
 
-### 4. Automated Formatting Hook
-* **Action**: Immediately after any markdown file mutation is completed, the Project Manager agent must run the Markdown formatter tool in the terminal:
-  ```bash
-  mdformat <path_to_file>
-  ```
-* This automatically corrects micro-formatting variances: correcting misaligned markdown tables, standardizing list bullet symbols, and cleaning excessive blank lines.

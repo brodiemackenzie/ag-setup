@@ -43,7 +43,7 @@ ag-setup/                                 # Local Workspace Root (Git Repository
 ├── jetski_customization_plan.md
 ├── workspace/                            # Master Workspace Directory (Pushed to GitHub)
 │   ├── templates/                        # Workspace templates folder
-│   │   ├── sdd-process/                  # Spec-Driven Development Process Template
+│   │   ├── sdd-anchored/                  # Spec-Driven Development Process Template
 │   │   │   └── _agents/                  # The SDD Agent/Skill Capsule
 │   │   │       ├── rules/
 │   │   │       │   └── sdd-workflow.md       # The Core SDD Rules (always_on)

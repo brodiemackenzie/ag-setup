@@ -66,7 +66,7 @@ ag-setup/
 │               └── bootstrap.sh            # Global installer script
 └── workspace/                              # WORKSPACE LAYER (rsync'd to new projects)
     └── templates/                          # Workspace templates folder
-        └── sdd-process/                    # SDD Process Template (Copied to new projects)
+        └── sdd-anchored/                    # SDD Process Template (Copied to new projects)
             └── _agents/
                 ├── agents/
                 │   ├── sdd-architect.json      # Specification & Design compiler JSON blueprint
@@ -159,7 +159,7 @@ Run the script manually in your terminal:
   * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).
   * `<github_repo_url>`: The GitHub URL to bind as `origin`.
 * **Options**:
-  * `--process`: The template slug inside `~/.gemini/config/workspace/templates/` (defaults to `sdd-process`).
+  * `--process`: The template slug inside `~/.gemini/config/workspace/templates/` (defaults to `sdd-anchored`).
   * `--scaffold`: Framework boilerplate setup: `nextjs` (Npx generator), `python` (Venv, requirements, basic pytest setup), or `none` (default).
 
 ---

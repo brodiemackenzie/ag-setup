@@ -44,6 +44,11 @@ Define endpoint paths, request formats, response payloads, and status codes. Use
   * `201 Created`: Success response schema.
   * `400 Bad Request`: Validation error response schema.
 
+### 2.5 Greenfield Scaffolding Plan
+If this is the first feature implementation for a greenfield project:
+* Define the directory layout, configuration files (e.g., `package.json`, `requirements.txt`), package manager tools (e.g., `npm`, `poetry`), and command execution flow needed to initialize the codebase.
+* This plan will be mapped directly to task `tsk-scaffold` in `TASKS.md` to be executed by the Coder.
+
 ## 3. Visual Architecture Diagrams
 Embed interactive **Mermaid.js** diagrams representing data flows, class hierarchies, or lifecycle state changes:
 

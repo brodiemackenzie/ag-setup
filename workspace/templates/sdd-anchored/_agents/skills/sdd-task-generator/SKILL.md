@@ -49,6 +49,17 @@ This document tracks the TDD implementation steps. Tasks must be checked off seq
 
 ---
 
+## Greenfield Scaffolding Rule
+
+If the feature checklist is the very first feature being implemented in the codebase (empty greenfield state):
+* The first task in `TASKS.md` **MUST** be **`tsk-0-scaffold`**:
+  * **Title**: `tsk-0-scaffold ([Ref: Workspace Scaffolding] Scaffold [Framework Name] structure)`
+  * **Given** an empty repository bound to git
+  * **When** initialization commands are executed (e.g., `npm init`, `poetry init`, or custom framework setup)
+  * **Then** the package description file and base directories are created successfully, and a dummy verification test can be executed.
+
+---
+
 ## The 12-Task Checklist Limit
 
 To prevent scope bloat and enforce micro-feature isolation, a single `TASKS.md` checklist **MUST NOT contain more than 12 tasks (`[ ]`)**.

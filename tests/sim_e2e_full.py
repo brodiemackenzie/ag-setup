@@ -43,7 +43,7 @@ def main():
         # PHASE 2: PROJECT BLUEPRINT
         # =====================================================================
         sim.log_info("\n>>> PHASE 2: COMPILING PROJECT BLUEPRINT...")
-        conv_id = sim.new_conversation("Help me start the project blueprint definition.")
+        conv_id = sim.new_conversation("/blueprint")
         
         # Playback Vision interview answers
         sim.send_message(
@@ -67,10 +67,11 @@ def main():
         # PHASE 3: SPECIFICATION & DESIGN COMPILATION
         # =====================================================================
         sim.log_info("\n>>> PHASE 3: COMPILING SPECIFICATION & DESIGN...")
-        conv_id = sim.new_conversation(
-            "Please compile the specification, technical design and task list for feature ft-submission-form under epic ep-guest-submissions."
-        )
+        conv_id = sim.new_conversation("/spec-feature")
         
+        # Scope selection
+        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
+
         # Playback Spec/Design answers in a single robust packet
         discovery_input = """
 Here are the functional and technical requirements for the feature:
@@ -106,11 +107,6 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
             subprocess.run(["git", "worktree", "remove", "--force", worktree_path], cwd=sim.temp_path, capture_output=True)
             subprocess.run(["git", "branch", "-D", "ep-guest-submissions-ft-submission-form"], cwd=sim.temp_path, capture_output=True)
 
-        # Execute manage_worktree prototype
-        manage_script = "./.agents/skills/worktree-manager/scripts/manage_worktree.sh"
-        sim.log_info("Running manage_worktree.sh prototype...")
-        subprocess.run([manage_script, "prototype", "ep-guest-submissions", "ft-submission-form"], cwd=sim.temp_path, check=True)
-        
         # Create a parent virtualenv so it can be inherited by the sandbox link-env step
         sim.log_info("Initializing virtualenv in parent project...")
         subprocess.run(["python3", "-m", "venv", ".venv"], cwd=sim.temp_path, check=True)
@@ -119,9 +115,11 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         parent_pip = os.path.join(sim.temp_path, ".venv", "bin", "pip")
         subprocess.run([parent_pip, "install", "flask", "pytest", "pytest-asyncio", "google-genai"], cwd=sim.temp_path, check=True)
 
-        # Execute manage_worktree link-env
-        sim.log_info("Running manage_worktree.sh link-env python...")
-        subprocess.run([manage_script, "link-env", "ep-guest-submissions", "ft-submission-form", "python"], cwd=sim.temp_path, check=True)
+        # Execute start-feature in chat (letting the PM agent run the shell scripts for us)
+        sim.log_info("Running /start-feature workflow...")
+        conv_id = sim.new_conversation("/start-feature")
+        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
+        sim.send_message(conv_id, "yes")
 
         # Verify sandbox was created and linked
         if not os.path.isdir(worktree_path):
@@ -171,12 +169,10 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         # =====================================================================
         sim.log_info("\n>>> PHASE 6: TEARDOWN & WORKTREE CLOSURE...")
         
-        # Merge changes in parent first
-        # In a real pipeline, the worktree commits are pushed/merged.
-        # We simulate this by checking that the files are committed in the worktree branch.
-        # Run close-feature
-        sim.log_info("Running manage_worktree.sh close-feature...")
-        subprocess.run([manage_script, "close-feature", "ep-guest-submissions", "ft-submission-form"], cwd=sim.temp_path, check=True)
+        # Run close-feature in chat (letting the PM agent dismantle the branch for us)
+        sim.log_info("Running /close-feature workflow...")
+        conv_id = sim.new_conversation("/close-feature")
+        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
 
         if os.path.exists(worktree_path):
             sim.log_fail("Worktree folder was not dismantled after close-feature execution.")

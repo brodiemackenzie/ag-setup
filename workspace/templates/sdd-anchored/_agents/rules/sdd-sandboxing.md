@@ -13,6 +13,7 @@ You must strictly operate within your allocated workspace directories to prevent
 * **Worktree Confines**: Aside from the Phase 0 exception, they must operate exclusively within their assigned Git worktree directory under `~/.gemini/jetski/worktrees/<project-name>/ep-<epic-name>-ft-<feature-name>/`.
 * **Relative path Locks**: Write paths inside agent configurations are resolved relative to their CWD workspace root (e.g., `./src/*`, `./docs/*`). 
 * **Top-Level Protection**: Any file creation, modification, or execution targeting files outside the active worktree directory (excluding the `docs/PROJECT.md` exception) is strictly forbidden and will be blocked immediately as a permission violation.
+* **Read-Only Spec Access**: The Coder agent is explicitly permitted read-only access to the parent repository's `docs/sdd/` directory to read specifications. This is a read-only exception; the agent must never execute commands or write files outside its sandbox.
 
 ## 2. Project Manager Exceptions
 * **The PM Boundary**: The Project Manager (`sdd-project-manager`) is the only agent permitted to operate in the top-level repository workspace for repository management and branch automation.

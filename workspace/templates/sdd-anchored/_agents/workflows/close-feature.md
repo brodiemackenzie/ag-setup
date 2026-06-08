@@ -24,6 +24,27 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
 *   **Merge Conflict Check**: If the merge command fails with conflicts, immediately load `.agents/skills/git-reconciliation/SKILL.md` and execute its conflict reconciliation rules to resolve markers and finish the merge.
 *   Verify that the sandbox folder under `~/.gemini/jetski/worktrees/<project>/ep-<epic>-ft-<feature>/` has been deleted from disk.
 
-## 4. Report Cleanup Status
+## 4. Report Cleanup Status & Git Summary
 *   Confirm branch pruning.
+*   Collect the final repository status by executing:
+    *   `git status` (to verify the clean parent branch)
+    *   `git worktree list` (to verify the sandbox worktree was deleted)
+    *   `git branch` (to verify the local feature branch was pruned)
+    *   `git log -n 3 --oneline` (to show the recent merge history)
 *   Notify the user that the workspace is clean: *"Sandbox dismantled, branch cleaned up, and workspace returned to a clean parent state."*
+*   Present the **Git Status Summary** in your final response using this layout:
+    ```text
+    ======================================
+    📊 GIT STATUS SUMMARY (CLEANUP COMPLETE)
+    ======================================
+    Active Parent Branch: [e.g., main]
+    Working Tree Status: [e.g., nothing to commit, working tree clean]
+    Active Worktrees:
+      - [List remaining worktrees]
+    Local Branches:
+      - [List remaining local branches]
+    Recent Commits:
+      - [Commit Hash] [Merge Commit Message]
+      - [Commit Hash] [Feature Commit Message]
+    ======================================
+    ```

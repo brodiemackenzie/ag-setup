@@ -24,6 +24,12 @@ These scripts test a single phase of the SDD process in isolation. They seed app
 *   **[sim_5_implementation.py](file:///usr/local/google/home/brodiem/projects/ag-setup/tests/sim_5_implementation.py)**:
     *   *Focus*: Implementor TDD coding loop.
     *   *Verifies*: The Coder agent reading specs, writing a Flask app, creating a pytest suite, and successfully passing all tests.
+*   **[sim_6_loop_escape.py](file:///usr/local/google/home/brodiem/projects/ag-setup/tests/sim_6_loop_escape.py)**:
+    *   *Focus*: TDD Loop Escape (unhappy path).
+    *   *Verifies*: The Coder agent halting after 3 consecutive failures and generating `failed_test_summary.md`.
+*   **[sim_7_conflict_resolution.py](file:///usr/local/google/home/brodiem/projects/ag-setup/tests/sim_7_conflict_resolution.py)**:
+    *   *Focus*: Git merge conflict resolution (unhappy path).
+    *   *Verifies*: The PM agent detecting merge conflicts during `/close-feature`, analyzing diff histories, surgical cleaning inline markers, and committing.
 
 ---
 

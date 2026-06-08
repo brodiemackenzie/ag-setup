@@ -23,16 +23,20 @@ Collect the required parameters **one at a time**:
 
 *   *Note*: To avoid user fatigue, if the user provides these requirements in a single comprehensive payload, you may bypass individual interview questions.
 
-## 4. Draft Specifications
+## 4. Draft Specifications & HITL Audit Checklist
 *   Formulate drafts of the three core specification files:
     1.  `SPEC.md`: Plain-English requirements (`req-<name>`) and journeys. No code blocks.
     2.  `DESIGN.md`: Data schemas, REST/RPC API contracts, Mermaid sequence diagrams, and test Verification Strategy.
     3.  `TASKS.md`: Actionable BDD task checklist (`tsk-<name>`) capped at **up to 12 tasks**. If greenfield, `tsk-0-scaffold` must be the first task.
-*   Present the drafted requirements to the user in chat.
-*   Ask: *"Shall I write these specifications to disk?"*
+*   Present the drafted specifications to the user in chat.
+*   **Mandatory HITL Audit Checkpoint**: You must explicitly ask the user to verify and approve the draft by answering these three audit points:
+    1.  **User Journeys Check**: Do the plain-English journeys in `SPEC.md` match your business objective?
+    2.  **Contracts Check**: Do the REST/RPC endpoints and database schemas in `DESIGN.md` align with your system architecture?
+    3.  **BDD Tasks Check**: Do the Gherkin scenario checklists in `TASKS.md` represent a complete, chronological path to build the code, and are they under the 12-task limit?
+*   Ask the user: *"Please review the specs against the three audit points. Do you approve writing these files to disk?"*
 
 ## 5. File Execution
-Once confirmed:
+Once the user confirms approval (e.g., "yes, write the spec files"):
 1.  Write the compiled content to their respective files inside the feature capsule directory:
     *   `docs/sdd/ep-<epic>/ft-<feature>/SPEC.md`
     *   `docs/sdd/ep-<epic>/ft-<feature>/DESIGN.md`

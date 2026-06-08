@@ -68,3 +68,40 @@ To maintain stable, high-speed, and decoupled test suites, you must enforce the 
 
 ### 3. No "Blind Completes"
 * **Physical Proof**: You are strictly forbidden from checking off a task `[x]` or ending your turn stating a task is finished without capturing and displaying the successful test runner output log directly in your text response.
+
+---
+
+## TDD Loop Escape & Escalate Playbook
+
+If a test fails during Phase 2 (GREEN), you must track your consecutive failed attempts to avoid credit burn:
+
+1.  **Maintain a Retry Counter**: Keep a local counter of consecutive failed compilation/test runs for the active task.
+2.  **Max Retries (3 Attempts)**: You are allowed up to 3 consecutive refactoring runs to get the tests to pass.
+3.  **No Process Alterations**: You are strictly prohibited from modifying specifications (`SPEC.md` / `DESIGN.md`), rules (`.agents/rules/`), or playbooks (`.agents/skills/`) to force tests to pass. Only the project code or local mock test scripts may be edited.
+4.  **Escalation Protocol (On 3rd Failure)**:
+    *   Halt the TDD loop immediately.
+    *   Create a file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` using the template below:
+        ```markdown
+        # Failed Test Summary: [Task Slug]
+
+        ## 1. Active Task
+        *   **Task**: [e.g. tsk-2-routes]
+
+        ## 2. Test Execution Details
+        *   **Command**: [e.g. pytest tests/test_app.py]
+        *   **Failure Output**:
+            ```
+            [Paste traceback here]
+            ```
+
+        ## 3. Attempt History
+        *   **Attempt 1**: [Describe change made, e.g. added missing route]
+        *   **Attempt 2**: [Describe change made, e.g. changed payload dictionary keys]
+        *   **Attempt 3**: [Describe change made, e.g. updated mock return formats]
+
+        ## 4. Hypothesis & Blocks
+        *   [Explain why you believe the tests are failing and what block you are experiencing, e.g. library credentials requirement]
+        ```
+    *   Alert the user in chat: *"I have reached the max retry limit of 3 for <task_slug>. I have compiled a failed test summary. Please inspect the code or provide guidance on how to resolve the test failure."*
+    *   **Stop execution and wait** for the user's manual guidance.
+

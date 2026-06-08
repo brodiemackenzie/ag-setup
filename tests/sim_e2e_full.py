@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 #
 # Chained E2E Simulation Pipeline
-# Executes the entire Spec-Driven Development (SDD) process sequentially:
-# 1. Bootstrap empty workspace.
-# 2. Architect vision interview (PROJECT.md).
-# 3. Architect spec/design discovery (SPEC.md, DESIGN.md, TASKS.md).
-# 4. Worktree sandbox prototype & linked environment bindings.
-# 5. Coder implementation (Flask app.py, index.html, tests).
-# 6. Test suite execution & validation.
-# 7. Worktree sandbox teardown & branch merge check.
+# Executes the entire Spec-Driven Development (SDD) process sequentially
+# by loading prompts, requirements, and assertion contracts from external fixtures.
 #
 
+import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -18,12 +14,40 @@ import sys
 from sdd_simulator import SDDSimulator
 
 def main():
+    parser = argparse.ArgumentParser(description="Chained E2E Simulation Pipeline")
+    parser.add_argument(
+        "--fixture",
+        default="generative_guestbook.json",
+        help="Fixture file name located under tests/fixtures/"
+    )
+    args = parser.parse_args()
+
+    # Load the specified fixture file
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    fixture_path = os.path.join(script_dir, "fixtures", args.fixture)
+    if not os.path.isfile(fixture_path):
+        print(f"[ERROR] Fixture file not found: {fixture_path}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Loading test fixture: {args.fixture}...")
+    with open(fixture_path, "r") as f:
+        fixture = json.load(f)
+
+    project_name = fixture["project_name"]
+    blueprint = fixture["blueprint_inputs"]
+    specs = fixture["spec_inputs"]
+    assertions = fixture["assertions"]
+
+    epic_slug = specs["epic_slug"]
+    feature_slug = specs["feature_slug"]
+    worktree_slug = f"{epic_slug}-{feature_slug}"
+
     # 1. Main Project Simulator Instance
-    sim = SDDSimulator("simulated-e2e-pipeline-project")
+    sim = SDDSimulator(project_name)
     sim.setup_workspace()
     
     worktree_path = os.path.expanduser(
-        f"~/.gemini/jetski/worktrees/{sim.project_name}/ep-guest-submissions-ft-submission-form"
+        f"~/.gemini/jetski/worktrees/{sim.project_name}/{worktree_slug}"
     )
 
     try:
@@ -32,8 +56,8 @@ def main():
         # =====================================================================
         sim.log_info("\n>>> PHASE 1: RUNNING BOOTSTRAP WORKFLOW...")
         conv_id = sim.new_conversation("/bootstrap")
-        sim.send_message(conv_id, "simulated-e2e-pipeline-project")
-        sim.send_message(conv_id, "git@github.com:dummy/simulated-e2e-pipeline-project.git")
+        sim.send_message(conv_id, project_name)
+        sim.send_message(conv_id, f"git@github.com:dummy/{project_name}.git")
         sim.send_message(conv_id, "sdd-anchored")
 
         sim.assert_file_exists(".agents/rules/sdd-pipeline.md")
@@ -45,23 +69,15 @@ def main():
         sim.log_info("\n>>> PHASE 2: COMPILING PROJECT BLUEPRINT...")
         conv_id = sim.new_conversation("/blueprint")
         
-        # Playback Vision interview answers
-        sim.send_message(
-            conv_id, 
-            "A generative guestbook web application where users can submit guest entries (name, comment) via an HTML form, saved to a simple JSON file database."
-        )
-        sim.send_message(conv_id, "Python (Flask), HTML5, JSON database backend.")
-        
-        breakdown_text = """
-* Epic: ep-guest-submissions
-  * Feature: ft-submission-form
-"""
-        sim.send_message(conv_id, breakdown_text)
+        # Playback Vision interview answers from fixture
+        sim.send_message(conv_id, blueprint["objective"])
+        sim.send_message(conv_id, blueprint["tech_stack"])
+        sim.send_message(conv_id, blueprint["breakdown"])
         sim.send_message(conv_id, "yes, write the blueprint docs/PROJECT.md")
 
         # Assertions
-        sim.assert_file_exists("docs/PROJECT.md", "Generative Guestbook")
-        sim.assert_file_exists("docs/sdd/ep-guest-submissions/ft-submission-form/SPEC.md")
+        sim.assert_file_exists("docs/PROJECT.md", blueprint["objective"][:30])
+        sim.assert_file_exists(f"docs/sdd/{epic_slug}/{feature_slug}/SPEC.md")
 
         # =====================================================================
         # PHASE 3: SPECIFICATION & DESIGN COMPILATION
@@ -70,27 +86,17 @@ def main():
         conv_id = sim.new_conversation("/spec-feature")
         
         # Scope selection
-        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
+        sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
 
-        # Playback Spec/Design answers in a single robust packet
-        discovery_input = """
-Here are the functional and technical requirements for the feature:
-1. Input fields: name, comment (no email validation needed).
-2. For each guest submission, use Gemini API on Vertex AI to generate a fun, customized witty response based on the comment text.
-3. For each guest submission, generate a fun image matching the comment sentiment using Imagen API on Vertex AI, saving the generated PNG locally in static/images/.
-4. Save name, timestamp, comment, generated reply, and generated image path in a local json file guestbook.json.
-5. GET / renders index.html displaying the submission form and the list of entries showing name, timestamp, comment, generated witty response, and generated image.
-6. In your TECHNICAL DESIGN, specify GET / and POST /submit endpoints and a Verification Strategy using pytest.
-Please compile SPEC.md, DESIGN.md, and TASKS.md.
-"""
-        sim.send_message(conv_id, discovery_input)
+        # Playback Spec/Design answers from fixture
+        sim.send_message(conv_id, specs["discovery_input"])
         sim.send_message(conv_id, "yes, write the spec files to disk")
 
         # Assertions
-        spec_root = "docs/sdd/ep-guest-submissions/ft-submission-form"
-        sim.assert_file_exists(f"{spec_root}/SPEC.md", "req-genai-witty-reply")
-        sim.assert_file_exists(f"{spec_root}/DESIGN.md", "guestbook.json")
-        sim.assert_file_exists(f"{spec_root}/TASKS.md", "tsk-0-scaffold")
+        spec_root = f"docs/sdd/{epic_slug}/{feature_slug}"
+        sim.assert_file_exists(f"{spec_root}/SPEC.md", assertions["spec_contains"])
+        sim.assert_file_exists(f"{spec_root}/DESIGN.md", assertions["design_contains"])
+        sim.assert_file_exists(f"{spec_root}/TASKS.md", assertions["tasks_contains"])
 
         # Commit specs to git history
         subprocess.run(["git", "add", "."], cwd=sim.temp_path)
@@ -105,7 +111,7 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         if os.path.exists(worktree_path):
             sim.log_info("Cleaning pre-existing worktree residues...")
             subprocess.run(["git", "worktree", "remove", "--force", worktree_path], cwd=sim.temp_path, capture_output=True)
-            subprocess.run(["git", "branch", "-D", "ep-guest-submissions-ft-submission-form"], cwd=sim.temp_path, capture_output=True)
+            subprocess.run(["git", "branch", "-D", worktree_slug], cwd=sim.temp_path, capture_output=True)
 
         # Create a parent virtualenv so it can be inherited by the sandbox link-env step
         sim.log_info("Initializing virtualenv in parent project...")
@@ -118,7 +124,7 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         # Execute start-feature in chat (letting the PM agent run the shell scripts for us)
         sim.log_info("Running /start-feature workflow...")
         conv_id = sim.new_conversation("/start-feature")
-        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
+        sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
         sim.send_message(conv_id, "yes")
 
         # Verify sandbox was created and linked
@@ -135,25 +141,26 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         sim.log_info("\n>>> PHASE 5: EXECUTING CODING PHASE IN SANDBOX...")
         
         # Spawn a secondary simulator instance bound to the worktree path (sharing project configuration files)
-        sandbox_sim = SDDSimulator("simulated-e2e-pipeline-project-sandbox")
+        sandbox_sim = SDDSimulator(f"{project_name}-sandbox")
         sandbox_sim.register_existing_directory(worktree_path)
 
         # Start implementor conversation
         sim.log_info("Starting Coder implementation conversation...")
         conv_id = sandbox_sim.new_conversation(
-            "Please read the specifications at docs/sdd/ep-guest-submissions/ft-submission-form/ and implement the tasks checklist in TASKS.md using TDD loops."
+            f"Please read the specifications at docs/sdd/{epic_slug}/{feature_slug}/ and implement the tasks checklist in TASKS.md using TDD loops."
         )
         
-        # Assert Coder generated files
+        # Assert Coder generated files from fixture list
         sim.log_info("Verifying generated code and test assets...")
-        sandbox_sim.assert_file_exists("app.py", "Flask")
-        sandbox_sim.assert_file_exists("templates/index.html")
-        sandbox_sim.assert_file_exists("tests/test_app.py")
+        for c_file in assertions["code_files"]:
+            sandbox_sim.assert_file_exists(c_file)
         
         # Run generated tests inside the sandbox virtualenv
         pytest_bin = os.path.join(worktree_path, ".venv", "bin", "pytest")
         sim.log_info("Running generated test suite inside sandbox...")
-        test_run = subprocess.run([pytest_bin, "tests/test_app.py"], cwd=worktree_path, capture_output=True, text=True)
+        # Resolve test suite path from fixture assertions if specified
+        test_suite = assertions.get("test_suite", f"tests/test_{feature_slug.replace('ft-', '').replace('-', '_')}.py")
+        test_run = subprocess.run([pytest_bin, test_suite], cwd=worktree_path, capture_output=True, text=True)
         
         print(test_run.stdout)
         if test_run.returncode != 0:
@@ -172,7 +179,7 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
         # Run close-feature in chat (letting the PM agent dismantle the branch for us)
         sim.log_info("Running /close-feature workflow...")
         conv_id = sim.new_conversation("/close-feature")
-        sim.send_message(conv_id, "ep-guest-submissions/ft-submission-form")
+        sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
 
         if os.path.exists(worktree_path):
             sim.log_fail("Worktree folder was not dismantled after close-feature execution.")
@@ -189,7 +196,7 @@ Please compile SPEC.md, DESIGN.md, and TASKS.md.
 
     print("")
     print("\033[1;32m====================================\033[0m")
-    print("\033[1;32m FULL E2E PIPELINE INTEGRATION OK     \033[0m")
+    print(f"\033[1;32m PIPELINE OK FOR FIXTURE: {args.fixture} \033[0m")
     print("\033[1;32m====================================\033[0m")
 
 if __name__ == "__main__":

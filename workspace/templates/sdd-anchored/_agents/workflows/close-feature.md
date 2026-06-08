@@ -14,6 +14,7 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
     ```bash
     ./.agents/skills/worktree-manager/scripts/manage_worktree.sh close-feature ep-<epic> ft-<feature>
     ```
+*   **Merge Conflict Check**: If the merge command fails with conflicts, immediately load `.agents/skills/git-reconciliation/SKILL.md` and execute its conflict reconciliation rules to resolve markers and finish the merge.
 *   Verify that the sandbox folder under `~/.gemini/jetski/worktrees/<project>/ep-<epic>-ft-<feature>/` has been deleted from disk.
 
 ## 3. Report Cleanup Status

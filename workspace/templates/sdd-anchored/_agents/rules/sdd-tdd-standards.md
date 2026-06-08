@@ -23,3 +23,18 @@ All test suites must be fully hermetic:
 ## 3. Google docstring compliance
 * **Mandatory Documentation**: Every public module, class, and method (excluding trivial getters/setters) must contain a strict Google Style docstring detailing a concise capitalized summary, explicit `Args`, `Returns`, and `Raises` exception conditions.
 * **Inline comment Hygiene**: You are strictly forbidden from writing inline comments that restate syntax or explain obvious logical flows (e.g. `# loop over list`). Inline comments are allowed exclusively to document *non-obvious decisions* or upstream library workarounds.
+
+## 4. TDD Loop Escape & Process Boundaries
+To prevent infinite token burn and maintain specification alignment, you must adhere to these loop escape limits:
+*   **Max TDD Retries**: You are allowed a maximum of **3 consecutive retries** to fix code for a single task after a test failure.
+*   **Strict Process Boundaries (No Cheating)**: The TDD execution loop and retry limits apply strictly to editing **project application code** and **local test suites** to satisfy specs. You are **strictly prohibited** from altering specifications (`SPEC.md` / `DESIGN.md` / `TASKS.md`), rules (`.agents/rules/`), or playbooks (`.agents/skills/`) to force tests to pass. Any specification discrepancies must trigger immediate escalation to the user.
+*   **Halt & Escalate**: If the test suite fails on the 3rd attempt:
+    1.  Halt the TDD loop immediately.
+    2.  Write a summary file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` detailing:
+        *   The task slug under work.
+        *   The exact failing test traceback.
+        *   A summary of changes made in the 3 failed attempts.
+        *   Your hypothesis on why the test is failing (e.g. library credential needs, mock returns mismatches).
+    3.  Report the failure to the user in chat: *"I have reached the max retry limit of 3 for <task_slug>. I have compiled a failed test summary. Please inspect the code or provide guidance on how to resolve the test failure."*
+    4.  Stop calling tools and await user instructions.
+

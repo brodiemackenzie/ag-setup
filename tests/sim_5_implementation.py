@@ -33,111 +33,29 @@ def main():
     pip_path = os.path.join(sim.temp_path, ".venv", "bin", "pip")
     subprocess.run([pip_path, "install", "flask", "pytest", "pytest-asyncio", "google-genai"], cwd=sim.temp_path, capture_output=True)
 
-    # 4. Seed the specifications for ep-guest-submissions/ft-submission-form
-    sim.log_info("Seeding Guestbook specification documents...")
+    # 4. Seed the specifications from the fixture folder
+    sim.log_info("Seeding Guestbook specification documents from fixtures...")
     
-    project_md = """# Project Blueprint: Generative Guestbook
-* Tech Stack: python, html, json
-* Epics:
-  * ep-guest-submissions
-    * ft-submission-form
-"""
-
-    spec_md = """# Functional Specification: Submission Form
-
-## 1. Objective
-Implement a guestbook web app where visitors can submit comments. For each submission, the app uses generative AI to produce a fun customized reply and an image matching the comment's tone.
-
-## 2. User Journeys
-* **Submit Guestbook Entry**: Visitor enters their name and comment, then clicks Submit. The page reloads, showing their entry along with a witty AI response and a dynamically generated image.
-
-## 3. Requirements
-* **req-form-ui**: Simple HTML form with fields for `name` and `comment`.
-* **req-genai-witty-reply**: Generate a fun, customized thank you response using the Gemini API based on the user's comment.
-* **req-genai-image**: Construct a fun prompt, generate an image using Imagen, save it locally in `static/images/`, and display it next to the entry.
-* **req-data-storage**: Store name, timestamp, comment, generated reply, and generated image file path in `guestbook.json`.
-* **req-display**: Display all past entries on the home page in reverse chronological order.
-"""
-
-    design_md = """# Technical Design: Submission Form
-
-## 1. Data Models & Schemas
-### Database File: `guestbook.json`
-Array of objects:
-```json
-[
-  {
-    "name": "Jane Doe",
-    "comment": "Had an amazing weekend in the nature reserve!",
-    "timestamp": "2026-06-08T12:00:00Z",
-    "generated_comment": "Glad nature recharged you! Hope you didn't get chased by squirrels!",
-    "image_path": "/static/images/jane_doe_17178888.png"
-  }
-]
-```
-
-## 2. API & Integration Contracts
-### GET /
-Renders index.html showing submission form and past guest entries.
-
-### POST /submit
-Parameters (Form POST): `name`, `comment`.
-Calls Vertex AI Gemini and Imagen, saves image to `static/images/`, appends entry to `guestbook.json`, and redirects to `/`.
-
-## 3. Verification Strategy
-* Unit/Integration Tests (`tests/test_app.py`):
-  * `test_home_page`: GET `/` returns 200.
-  * `test_valid_submission`: POST `/submit` with valid parameters returns 302 redirect.
-  * Mocks: Mock the `google.genai.Client` text and image generation calls to return stable mock responses and dummy image bytes, allowing hermetic offline testing.
-"""
-
-    tasks_md = """# Actionable Tasks: Submission Form
-
-This document tracks the TDD implementation steps. Tasks must be checked off sequentially by the implementor.
-
----
-
-## Epic: ep-guest-submissions (Guest Submissions)
-## Feature: ft-submission-form (Submission Form)
-
----
-
-## Gherkin BDD Checklist
-
-- [ ] **tsk-0-scaffold ([Ref: Workspace Scaffolding] Initialize folder structure and Flask app)**
-  * **Given** an empty repository
-  * **When** Flask, pytest, and google-genai are installed and app.py is initialized
-  * **Then** the server starts and running pytest returns success
-
-- [ ] **tsk-1-genai-service ([Ref: AI Service] Implement Gemini & Imagen client bindings)**
-  * **Given** a GenAI helper service module
-  * **When** called with a guest comment
-  * **Then** returns a fun thank-you string and generates/saves a local PNG file
-
-- [ ] **tsk-2-routes ([Ref: Flask Routes] Implement GET and POST routes)**
-  * **Given** a local guestbook.json persistence file
-  * **When** GET / or POST /submit are requested
-  * **Then** entries are successfully read or appended with generated AI fields
-
-- [ ] **tsk-3-ui ([Ref: HTML Form] Create frontend template templates/index.html)**
-  * **Given** the Flask server
-  * **When** GET / is requested
-  * **Then** templates/index.html is rendered containing input fields, past entries, AI replies, and generated images
-"""
-
+    fixture_dir = os.path.join(sim.script_dir, "fixtures", "generative_guestbook")
     docs_dir = os.path.join(sim.temp_path, "docs")
     os.makedirs(docs_dir, exist_ok=True)
-    with open(os.path.join(docs_dir, "PROJECT.md"), "w") as f:
-        f.write(project_md)
-        
+    
+    # Copy PROJECT.md
+    shutil.copy(
+        os.path.join(fixture_dir, "PROJECT.md"),
+        os.path.join(docs_dir, "PROJECT.md")
+    )
+    
+    # Create the target epic/feature spec folder
     spec_dir = os.path.join(docs_dir, "sdd", "ep-guest-submissions", "ft-submission-form")
     os.makedirs(spec_dir, exist_ok=True)
-    with open(os.path.join(spec_dir, "SPEC.md"), "w") as f:
-        f.write(spec_md)
-    with open(os.path.join(spec_dir, "DESIGN.md"), "w") as f:
-        f.write(design_md)
-    with open(os.path.join(spec_dir, "TASKS.md"), "w") as f:
-        f.write(tasks_md)
+    
+    # Copy SPEC.md, DESIGN.md, TASKS.md
+    for filename in ["SPEC.md", "DESIGN.md", "TASKS.md"]:
+        shutil.copy(
+            os.path.join(fixture_dir, filename),
+            os.path.join(spec_dir, filename)
+        )
 
     # Commit initial spec state
     subprocess.run(["git", "add", "."], cwd=sim.temp_path)

@@ -13,7 +13,7 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
 *   Run `git status --porcelain` inside the sandbox directory `~/.gemini/jetski/worktrees/<project>/ep-<epic>-ft-<feature>/`.
 *   If the command outputs any uncommitted or untracked changes:
     *   Alert the user in chat: *"There are uncommitted changes in the feature sandbox. Shall I commit them on your behalf before closing, or would you like to review them first?"*
-    *   If the user approves automatic commit, run `git add -A && git commit -m "stage remaining changes before sandbox closure"` inside the sandbox directory.
+    *   If the user approves automatic commit, run `git add -A && git commit -m "stage remaining changes before sandbox closure"` inside the sandbox directory. *(Note: This commit is fully authorized under the global commit ban exception, as it is explicitly dictated by this structured workflow).*
     *   If the user prefers manual review, halt the workflow and await instructions.
 
 ## 3. Execute Teardown Command

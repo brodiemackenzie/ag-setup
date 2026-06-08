@@ -16,7 +16,8 @@ When executing this skill, you MUST follow this plan-first flow:
 
 ## Design Document Structure
 
-The resulting file must be saved at `docs/sdd/<epic-slug>/<feature-slug>/DESIGN.md` inside the active worktree, conforming to this structure:
+The resulting draft must be compiled into a new Antigravity Artifact named **`sdd_design_draft`** (set `IsArtifact` to true, use type `other`), conforming to this structure:
+*(Note: Do NOT write this file directly to the workspace docs directory until the draft is fully reviewed and approved by the user).*
 
 ```markdown
 # Technical Design: [Feature Title in Title Case]

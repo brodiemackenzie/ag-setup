@@ -24,7 +24,8 @@ Before drafting `SPEC.md`, the agent must gather precise business rules from the
 
 ## Specification Document Structure
 
-The resulting file must be saved at `docs/sdd/<epic-slug>/<feature-slug>/SPEC.md` inside the active worktree capsule, conforming to the following structure:
+The resulting draft must be compiled into a new Antigravity Artifact named **`sdd_spec_draft`** (set `IsArtifact` to true, use type `other`), conforming to the following structure:
+*(Note: Do NOT write this file directly to the workspace docs directory until the draft is fully reviewed and approved by the user).*
 
 ```markdown
 # Specification: [Feature Title in Title Case]

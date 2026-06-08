@@ -11,7 +11,8 @@ Translate the architecture contracts and Verification Strategy from `DESIGN.md` 
 
 ## Checklist Document Structure
 
-The resulting file must be saved at `docs/sdd/<epic-key>/<feat-key>/TASKS.md` in the parent repository, conforming strictly to this structure:
+The resulting draft must be compiled into a new Antigravity Artifact named **`sdd_tasks_draft`** (set `IsArtifact` to true, use type `other`), conforming strictly to this structure:
+*(Note: Do NOT write this file directly to the workspace docs directory until the draft is fully reviewed and approved by the user).*
 
 ```markdown
 # Actionable Tasks: [Feature Title in Title Case]

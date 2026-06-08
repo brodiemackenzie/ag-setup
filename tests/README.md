@@ -60,5 +60,43 @@ Ensure you are inside the `ag-setup` parent workspace repository, and run any te
 ./tests/sim_e2e_full.py
 ```
 
+## ⚠️ Local IDE-Mode Limitations (Bug b/521465559)
+When executing python simulation scripts inside a local IDE workspace, calls to the `agentapi` CLI tool will fail with a gRPC crash:
+`failed to start cascade: rpc error: code = Internal desc = stream terminated by RST_STREAM`
+
+This is because the local IDE-bound server does not initialize the persistent project store in IDE mode, causing the server to panic when it receives workspace configuration data from the CLI client.
+
+### Manual E2E Playback Workaround
+To verify the SDD pipeline locally, you must play back the E2E lifecycle manually inside your JetSki chat conversation window using the slash commands:
+
+1.  **Bootstrap Workspace (`/bootstrap`)**:
+    *   *Prompt*: `/bootstrap`
+    *   *Dialog*: Choose name `generative-guestbook` and select `no` for git binding.
+    *   *Outcome*: Initializes empty git repo and copies templates to `.agents/`.
+2.  **Vision Blueprint (`/blueprint`)**:
+    *   *Prompt*: `/blueprint`
+    *   *Dialog*: Provide project objective (`guestbook app with witty AI replies and Imagen PNGs`), tech stack (`python, html, json`), and epic/feature breakdown (`ep-guest-submissions/ft-submission-form`).
+    *   *Outcome*: Creates `docs/PROJECT.md`.
+3.  **Spec Discovery (`/spec-feature`)**:
+    *   *Prompt*: `/spec-feature`
+    *   *Dialog*: Set scope to `ep-guest-submissions/ft-submission-form` and provide functional rules (name, comment, JSON storage, homepage display).
+    *   *Approval (HITL Check)*: Approve the drafted specs with `yes, write the spec files`.
+    *   *Outcome*: Writes `SPEC.md`, `DESIGN.md`, and `TASKS.md` to disk.
+4.  **Provision Sandbox (`/start-feature`)**:
+    *   *Prompt*: `/start-feature`
+    *   *Dialog*: Specify `ep-guest-submissions/ft-submission-form`.
+    *   *Outcome*: PM provisions Git worktree sandbox under `~/.gemini/jetski/worktrees/` and symlinks venv dependencies.
+5.  **TDD Code Loop (Sandbox implementation)**:
+    *   Open a new chat thread bound to the sandbox folder directory.
+    *   *Prompt*: `Please read specs and implement TASKS.md`.
+    *   *Outcome*: Coder implements code/tests, runs pytest, checks off tasks sequentially, and commits.
+6.  **Teardown & Merge (`/close-feature`)**:
+    *   Return to your main parent workspace chat thread.
+    *   *Prompt*: `/close-feature`
+    *   *Dialog*: Specify `ep-guest-submissions/ft-submission-form`.
+    *   *Outcome*: PM merges the feature branch into the parent branch, resolves any conflicts, and deletes the worktree folder.
+
+---
+
 ### Clean Teardown
 Each script is designed to clean up its own temporary sandbox directory under `sandbox/` and its dynamic project configurations under `~/.gemini/config/projects/` upon completion. If a test fails, it halts immediately, leaving the files intact on disk for debugging.

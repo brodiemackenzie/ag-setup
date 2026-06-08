@@ -90,6 +90,38 @@ class SDDSimulator:
             subprocess.run(["git", "add", "."], cwd=self.temp_path)
             subprocess.run(["git", "commit", "-m", "initial commit", "-q"], cwd=self.temp_path)
 
+    def register_existing_directory(self, target_path, permission_grants=None):
+        self.temp_path = target_path
+        if os.path.exists(self.config_path):
+            os.remove(self.config_path)
+
+        self.log_info(f"Registering existing directory config at {self.config_path} targeting {self.temp_path}...")
+        config = {
+            "id": self.project_id,
+            "name": self.temp_path,
+            "projectResources": {
+                "resources": [{"folderUri": f"file://{self.temp_path}"}]
+            }
+        }
+
+        if permission_grants:
+            config["permissionGrants"] = permission_grants
+        else:
+            # Sandbox rules: restrict write access to the worktree folder only
+            config["permissionGrants"] = {
+                "allow": [
+                    f"read_file({self.temp_path})",
+                    f"write_file({self.temp_path})"
+                ],
+                "deny": [
+                    f"write_file({self.workspace_dir})"
+                ]
+            }
+
+        os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
+        with open(self.config_path, "w") as f:
+            json.dump(config, f, indent=2)
+
     def run_agentapi(self, cmd_list):
         result = subprocess.run(cmd_list, env=self.env, capture_output=True, text=True)
         if result.returncode != 0:

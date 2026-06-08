@@ -136,6 +136,17 @@ To install these templates globally so you can use the bootstrapper CLI to initi
 
 ---
 
+## 🎙️ Chat Slash Commands (The SDD Chat Lifecycle)
+
+When chatting with the AI agent inside the workspace, you can use conversational slash commands to run each phase of the SDD process. The agent will execute all filesystem setups, git worktree bindings, and code verifications on your behalf:
+
+1.  **`/blueprint`**: Triggers the Architect Vision Interview, compiles the high-level project goals (`docs/PROJECT.md`), and scaffolds empty directory capsule structures.
+2.  **`/spec-feature`**: Prompts you for an Epic/Feature scope, conducts the requirements discovery interview, and compiles `SPEC.md`, `DESIGN.md`, and `TASKS.md` inside the feature capsule.
+3.  **`/start-feature`**: Commits all approved specifications in the parent repo, provisions an isolated Git branch worktree (`worktrees/`), links dynamic runtimes (Python/Node), and opens a sandboxed coder IDE.
+4.  **`/close-feature`**: Dismantles the feature worktree, prunes branch mappings, and checks git status.
+
+---
+
 ## 🛠️ Tooling & Command Manual
 
 ### 1. The Project Bootstrapper (`bootstrap.sh` / `/bootstrap`)
@@ -146,21 +157,20 @@ If you are in a chat session with Jetski/Antigravity, simply type:
 ```
 /bootstrap
 ```
-The agent will take the lead and conversationally collect the three required inputs (Project Name, GitHub Remote SSH URL, and scaffolding choice) **one at a time** in chat, and execute the installer automatically on your behalf. No terminal commands to remember!
+The agent will take the lead and conversationally collect the required inputs (Project Name, GitHub Remote SSH URL, and process template choosing) **one at a time** in chat, and execute the installer automatically on your behalf. No terminal commands to remember!
 
 #### 💻 Option B: CLI Command Script
 Run the script manually in your terminal:
 * **Location**: `global/skills/project-bootstrap/scripts/bootstrap.sh`
 * **Usage**:
   ```bash
-  ./global/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>] [--scaffold <framework>]
+  ./global/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>]
   ```
 * **Arguments**:
   * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).
   * `<github_repo_url>`: The GitHub URL to bind as `origin`.
 * **Options**:
   * `--process`: The template slug inside `~/.gemini/config/workspace/templates/` (defaults to `sdd-anchored`).
-  * `--scaffold`: Framework boilerplate setup: `nextjs` (Npx generator), `python` (Venv, requirements, basic pytest setup), or `none` (default).
 
 ---
 

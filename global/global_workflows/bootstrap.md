@@ -25,11 +25,20 @@ Instructions:
 
 4. **Present Success & Transition Workspace**:
    * Show the successful shell output logs to the user.
-   * Confirm that the script has automatically opened a new JetSki window matching the project folder using the JetSki CLI launcher.
+   * Confirm that the project has been automatically registered in Jetski Hub.
    * Direct the user to:
-     1. Switch to the newly opened IDE window.
-     2. Open a new chat session (which will automatically be named after the project workspace).
-     3. Ask the new agent to start the discovery process (e.g., "Help me draft the project proposal") to begin the Spec-Driven Development functional journey.
+     1. Open Jetski Hub in your browser (e.g., `http://jetski/`).
+     2. Select the newly registered project matching `<project_name>` from the sidebar.
+     3. Open a new chat session.
+     4. Ask the agent to start the discovery process (e.g., "Help me draft the project proposal") to begin the Spec-Driven Development functional journey.
+
+## Project Configuration & Permissions Details
+When bootstrapping a project, the script creates a configuration file in `~/.gemini/config/projects/<UUID>.json`. Key details to be aware of:
+*   **Isolation**: Each project has a unique UUID and a defined `folderUri` resource. The agent is strictly confined to this boundary when `Allow non-workspace access` is disabled.
+*   **Permissions**: New projects default to `request-review` mode. To allow autonomous execution without constant prompts, you can add global permission rules to `~/.gemini/config/config.json` (for Web) or `~/.gemini/jetski/cli/settings.json` (for CLI).
+    *   For example, to auto-approve writes to worktrees, allow the parent folder:
+        `write_file(/path/to/worktrees)`
+*   **Write Access**: The project config resource is defined with `allowWrite: true` (using `gitFolder` structure) to permit agent file modifications.
 
 Constraints:
 * Only use the instructions in this file when bootstrapping a new project.

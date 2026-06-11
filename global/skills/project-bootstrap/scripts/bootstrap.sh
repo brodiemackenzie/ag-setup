@@ -94,16 +94,45 @@ if [ ! -d "$TEMPLATES_DIR" ]; then
   exit 1
 fi
 
-# 2. Create Workspace Directory & Init Git
+# 2. Create Workspace Directory
 log "Creating project folder at $PROJECT_DIR..."
 mkdir -p "$PROJECT_DIR"
-cd "$PROJECT_DIR"
 
+# 3. Register Project in Jetski Hub
+PROJECTS_DIR="$HOME/.gemini/config/projects"
+mkdir -p "$PROJECTS_DIR"
+
+if command -v uuidgen >/dev/null 2>&1; then
+  UUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+else
+  UUID=$(cat /proc/sys/kernel/random/uuid)
+fi
+
+CONFIG_FILE="$PROJECTS_DIR/$UUID.json"
+log "Registering project in Jetski Hub ($CONFIG_FILE)..."
+cat <<EOF > "$CONFIG_FILE"
+{
+  "id": "$UUID",
+  "name": "$PROJECT_NAME",
+  "projectResources": {
+    "resources": [
+      {
+        "gitFolder": {
+          "folderUri": "file://$PROJECT_DIR",
+          "allowWrite": true
+        }
+      }
+    ]
+  }
+}
+EOF
+
+# 4. Setup Git
+cd "$PROJECT_DIR"
 log "Initializing Git repository..."
 git init
 
-
-# 3. Bind Git Remote Origin
+# 5. Bind Git Remote Origin
 if [ -n "$GITHUB_REPO_URL" ] && [ "$GITHUB_REPO_URL" != "none" ]; then
   log "Configuring remote Git origin to $GITHUB_REPO_URL..."
   git remote add origin "$GITHUB_REPO_URL"
@@ -111,12 +140,12 @@ else
   log "Skipping remote Git origin configuration (none provided)."
 fi
 
-# 4. Safe Template RSync copying without git history metadata duplication
+# 6. Safe Template RSync copying without git history metadata duplication
 log "Safely copying $PROCESS_SLUG process templates to .agents/..."
 mkdir -p .agents
 rsync -av --exclude='.git' "$TEMPLATES_DIR/_agents/" ".agents/"
 
-# 5. Setup GitIgnore additions
+# 7. Setup GitIgnore additions
 log "Updating .gitignore to exclude local agent telemetry and worktree files..."
 cat << 'EOF' >> .gitignore
 
@@ -129,13 +158,6 @@ EOF
 
 log "Initialization complete! Project scaffolded successfully at $PROJECT_DIR."
 
-# 6. Open the new workspace in a new window (JetSki IDE only)
-JETSKI_CLI="/opt/jetski-ide/bin/jetski"
-if [ -f "$JETSKI_CLI" ]; then
-  log "Launching new JetSki IDE window for workspace: $PROJECT_DIR..."
-  "$JETSKI_CLI" -n "$PROJECT_DIR"
-else
-  log "Note: JetSki IDE command-line launcher not found. Please open $PROJECT_DIR manually."
-fi
+# 8. Next steps for Jetski Hub
+log "Next steps: Open Jetski Hub in your browser, select the registered project '$PROJECT_NAME', and start the SDD discovery process by opening a new chat!"
 
-log "Next steps: Switch to your new JetSki window, open a new chat, and start the SDD discovery process!"

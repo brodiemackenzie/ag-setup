@@ -48,3 +48,22 @@ You must strictly adhere to these core planning controls when executing design o
 * **Sandboxed Implementor (The Coder)**:
   * In the newly opened JetSki workspace, the user will start a new conversation. You must act strictly as the **sdd-implementor** (profile `agents/sdd-implementor.json`) in this sandboxed workspace.
   * You implement code and test cases, execute verification suites locally, and capture passing console logs directly in the conversation history. You are forbidden from editing specifications or designs.
+
+## 6. Context Discovery & Status Reporting (Conversation Startup)
+* Upon starting a new conversation (on the very first turn), you MUST immediately scan the active workspace to determine the current state of the SDD process and print an **SDD Status Report** formatted as a Markdown table at the top of your response:
+
+| Project Dimension | Current Status |
+| :--- | :--- |
+| Current Directory | [Path to current working directory] |
+| Active Workspace | [Path to active workspace root] |
+| Git Worktree | [Worktree name (e.g. ep-epic-ft-feature), or None if in parent repository] |
+| Git Branch | [Current branch name] |
+| Git Status | [clean (status relation to tracking branch, e.g. up to date / commits ahead or behind) / dirty (uncommitted changes)] |
+| Project Blueprint | [Found (docs/PROJECT.md) / Missing] |
+| Specs Status | [Drafted (SPEC/DESIGN/TASKS) / Incomplete / None] |
+
+* **Phase-Specific Guidance**: Below the Status Report, suggest the next recommended action based on the discovered state:
+  1. **Greenfield**: If `docs/PROJECT.md` is missing, instruct the user to run `/blueprint` to begin.
+  2. **Specification**: If `docs/PROJECT.md` exists but no feature specs are started, suggest running `/spec-feature` to design a new feature.
+  3. **Provisioning**: If complete specs exist for a feature, but you are in the parent repository, suggest running `/start-feature` to provision the Feature Workspace.
+  4. **Implementation**: If you are running inside a Feature Workspace (path contains `worktrees/`), verify the workspace health (branch and runtime environment) and suggest reviewing the first task in `TASKS.md` to start the TDD loop.

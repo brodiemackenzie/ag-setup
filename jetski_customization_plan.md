@@ -105,9 +105,9 @@ We decompose core constraints into three focused modular rule files:
 
 ### 3. Worktree Manager Skill (`skills/worktree-manager/`)
 Hosts the **`manage_worktree.sh`** script, supporting:
-* **`prototype <epic> <feature>`**: Provisions an isolated worktree, creates the DEDICATED feature folder under `docs/sdd/<epic>/<feature>/`, and scaffolds blank templates for `SPEC.md`, `DESIGN.md`, and `TASKS.md`.
+* **`prototype <epic> <feature>`**: Provisions an isolated worktree, registers the project in Jetski Hub (creating a JSON config in `~/.gemini/config/projects/`), creates the DEDICATED feature folder under `docs/sdd/<epic>/<feature>/`, and scaffolds blank templates for `SPEC.md`, `DESIGN.md`, and `TASKS.md`.
 * **`link-env <epic> <feature>`**: Auto-detects Node.js (symlinks `node_modules`), Python (inherits main `.venv` via `--system-site-packages`), or Rust (symlinks target cache), and binds environments instantly.
-* **`close-feature <epic> <feature>`**: Merges the branch, reconciles dependencies back to the main environment, and safely deletes the worktree folder.
+* **`close-feature <epic> <feature>`**: Merges the branch, removes the project registration from Jetski Hub, reconciles dependencies back to the main environment, and safely deletes the worktree folder.
 
 ---
 

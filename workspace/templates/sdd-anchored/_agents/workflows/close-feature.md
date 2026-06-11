@@ -23,6 +23,7 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
     ```
 *   **Merge Conflict Check**: If the merge command fails with conflicts, immediately load `.agents/skills/git-reconciliation/SKILL.md` and execute its conflict reconciliation rules to resolve markers and finish the merge.
 *   Verify that the sandbox folder under `~/.gemini/jetski/worktrees/<project>/ep-<epic>-ft-<feature>/` has been deleted from disk.
+*   Verify that the workspace has been removed from the parent project config in Jetski Hub (the parent project's JSON file under `~/.gemini/config/projects/` should no longer list the deleted worktree path in its resources).
 
 ## 4. Report Cleanup Status & Git Summary
 *   Confirm branch pruning.

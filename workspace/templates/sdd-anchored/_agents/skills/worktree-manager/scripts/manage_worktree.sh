@@ -59,15 +59,39 @@ case "$SUBCOMMAND" in
 
     log "Worktree provisioning complete! Workspace ready for implementation."
 
-    # Launch new JetSki workspace window
-    JETSKI_CLI="/opt/jetski-ide/bin/jetski"
-    if [ -f "$JETSKI_CLI" ]; then
-      log "Launching new JetSki IDE window for worktree sandbox: $WORKTREE_PATH..."
-      # Run in background asynchronously so script exits immediately
-      "$JETSKI_CLI" -n "$WORKTREE_PATH" &
-    else
-      log "Note: JetSki IDE command-line launcher not found. Please open $WORKTREE_PATH manually."
-    fi
+    # Register Workspace in Parent Project in Jetski Hub
+    log "Registering workspace in parent project config..."
+    python3 -c "
+import os, json, glob
+parent_root = '$PARENT_ROOT'
+worktree_path = '$WORKTREE_PATH'
+projects_dir = os.path.expanduser('~/.gemini/config/projects')
+parent_uri = f'file://{parent_root}'
+worktree_uri = f'file://{worktree_path}'
+
+found = False
+for path in glob.glob(os.path.join(projects_dir, '*.json')):
+    try:
+        with open(path, 'r+') as f:
+            data = json.load(f)
+            resources = data.get('projectResources', {}).get('resources', [])
+            has_parent = any(r.get('folderUri') == parent_uri for r in resources)
+            if has_parent:
+                if not any(r.get('folderUri') == worktree_uri for r in resources):
+                    resources.append({'folderUri': worktree_uri})
+                    data['projectResources']['resources'] = resources
+                    f.seek(0)
+                    json.dump(data, f, indent=2)
+                    f.truncate()
+                    print(f'Added workspace to project config: {path}')
+                found = True
+                break
+    except Exception as e:
+        print(f'Error processing {path}: {e}')
+
+if not found:
+    print(f'Warning: No project config found containing parent root: {parent_root}')
+"
     ;;
 
   link-env)
@@ -141,6 +165,35 @@ case "$SUBCOMMAND" in
       log_err "Worktree folder does not exist: $WORKTREE_PATH"
       exit 1
     fi
+
+    # Remove Workspace from Parent Project in Jetski Hub
+    log "Removing workspace from parent project config..."
+    python3 -c "
+import os, json, glob
+parent_root = '$PARENT_ROOT'
+worktree_path = '$WORKTREE_PATH'
+projects_dir = os.path.expanduser('~/.gemini/config/projects')
+parent_uri = f'file://{parent_root}'
+worktree_uri = f'file://{worktree_path}'
+
+for path in glob.glob(os.path.join(projects_dir, '*.json')):
+    try:
+        with open(path, 'r+') as f:
+            data = json.load(f)
+            resources = data.get('projectResources', {}).get('resources', [])
+            has_parent = any(r.get('folderUri') == parent_uri for r in resources)
+            if has_parent:
+                new_resources = [r for r in resources if r.get('folderUri') != worktree_uri]
+                if len(new_resources) < len(resources):
+                    data['projectResources']['resources'] = new_resources
+                    f.seek(0)
+                    json.dump(data, f, indent=2)
+                    f.truncate()
+                    print(f'Removed workspace from project config: {path}')
+                break
+    except Exception as e:
+         print(f'Error processing {path}: {e}')
+"
 
     # Prune worktrees just in case
     git worktree prune

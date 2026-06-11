@@ -21,9 +21,9 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
 *   Prompt the user in chat for linking approval:
     *   *Example*: *"I detected python dependencies in the technical design. I will link the python virtualenv. Do you approve? [Yes/No]"*
 
-## 4. Execute Sandbox Provisioning
+## 4. Execute Sandbox Provisioning & Start Implementation
 Once the user approves or adjusts the parameters:
-1.  Run the worktree manager shell script to provision the sandbox branch:
+1.  Run the worktree manager shell script to provision the sandbox branch and register the workspace in the parent project:
     ```bash
     ./.agents/skills/worktree-manager/scripts/manage_worktree.sh prototype ep-<epic> ft-<feature>
     ```
@@ -32,7 +32,13 @@ Once the user approves or adjusts the parameters:
     ./.agents/skills/worktree-manager/scripts/manage_worktree.sh link-env ep-<epic> ft-<feature> [approved_envs...]
     ```
     *(e.g., `./manage_worktree.sh link-env ep-guest-submissions ft-submission-form python`)*
-3.  Confirm that the script has successfully opened a new JetSki window for the sandbox folder.
-4.  Direct the user:
-    *   *"The sandbox has been successfully provisioned! Please switch to the newly opened JetSki window, open a new chat, and instruct the Coder: 'Please implement the feature outlined in the specifications'."*
-5.  **Immediately halt execution** and stop calling tools.
+3.  Start the implementation conversation in the new worktree sandbox. Run the `agentapi` command with the working directory (`Cwd`) set to the absolute path of the worktree (`~/.gemini/jetski/worktrees/<project_name>/ep-<epic>-ft-<feature>`):
+    ```bash
+    agentapi new-conversation "Please read the specifications at docs/sdd/ep-<epic>/ft-<feature>/ and implement the tasks checklist in TASKS.md using TDD loops."
+    ```
+4.  Capture the `conversationId` from the command output.
+5.  Direct the user:
+    *   *"The sandbox has been successfully provisioned and registered as a workspace under your parent project in Jetski Hub!"*
+    *   *"Started implementation conversation: **<conversationId>**."*
+    *   *"You can now open Jetski Hub, select the parent project **<project_name>**, switch to the **ep-<epic>-ft-<feature>** workspace in the sidebar, and monitor the implementation progress live."*
+6.  **Immediately halt execution** and stop calling tools.

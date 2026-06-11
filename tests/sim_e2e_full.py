@@ -125,7 +125,16 @@ def main():
         sim.log_info("Running /start-feature workflow...")
         conv_id = sim.new_conversation("/start-feature")
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
-        sim.send_message(conv_id, "yes")
+        res = sim.send_message(conv_id, "yes")
+
+        # Extract the conversation ID of the spawned coder session
+        import re
+        json_str = json.dumps(res)
+        match = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', json_str)
+        if not match:
+            sim.log_fail(f"Could not find coder conversation ID in response: {json_str}")
+        coder_conv_id = match.group(0)
+        sim.log_info(f"Extracted coder conversation ID: {coder_conv_id}")
 
         # Verify sandbox was created and linked
         if not os.path.isdir(worktree_path):
@@ -140,15 +149,31 @@ def main():
         # =====================================================================
         sim.log_info("\n>>> PHASE 5: EXECUTING CODING PHASE IN SANDBOX...")
         
-        # Spawn a secondary simulator instance bound to the worktree path (sharing project configuration files)
+        # Initialize sandbox simulator helper (without registering new project)
         sandbox_sim = SDDSimulator(f"{project_name}-sandbox")
-        sandbox_sim.register_existing_directory(worktree_path)
+        sandbox_sim.temp_path = worktree_path
 
-        # Start implementor conversation
-        sim.log_info("Starting Coder implementation conversation...")
-        conv_id = sandbox_sim.new_conversation(
-            f"Please read the specifications at docs/sdd/{epic_slug}/{feature_slug}/ and implement the tasks checklist in TASKS.md using TDD loops."
-        )
+        # Wait for Coder to finish by polling for expected files
+        import time
+        sim.log_info("Waiting for Coder to generate files...")
+        timeout = 300 # 5 minutes
+        start_time = time.time()
+        success = False
+        while time.time() - start_time < timeout:
+            all_exist = True
+            for c_file in assertions["code_files"]:
+                abs_path = os.path.join(worktree_path, c_file)
+                if not os.path.isfile(abs_path):
+                    all_exist = False
+                    break
+            if all_exist:
+                success = True
+                break
+            time.sleep(10)
+        
+        if not success:
+            sim.log_fail("Timeout waiting for Coder to generate files.")
+        sim.log_pass("Coder finished generating files.")
         
         # Assert Coder generated files from fixture list
         sim.log_info("Verifying generated code and test assets...")

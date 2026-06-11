@@ -142,7 +142,7 @@ When chatting with the AI agent inside the workspace, you can use conversational
 
 1.  **`/blueprint`**: Triggers the Architect Vision Interview, compiles the high-level project goals (`docs/PROJECT.md`), and scaffolds empty directory capsule structures.
 2.  **`/spec-feature`**: Prompts you for an Epic/Feature scope, conducts the requirements discovery interview, and compiles `SPEC.md`, `DESIGN.md`, and `TASKS.md` inside the feature capsule.
-3.  **`/start-feature`**: Commits all approved specifications in the parent repo, provisions an isolated Git branch worktree (`worktrees/`), links dynamic runtimes (Python/Node), and opens a sandboxed coder IDE.
+3.  **`/start-feature`**: Commits all approved specifications in the parent repo, provisions an isolated Git branch worktree (`worktrees/`), links dynamic runtimes (Python/Node), registers the project in Jetski Hub, and starts the implementation conversation.
 4.  **`/close-feature`**: Dismantles the feature worktree, prunes branch mappings, and checks git status.
 
 ---

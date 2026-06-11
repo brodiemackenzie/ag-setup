@@ -21,30 +21,42 @@ log_err() {
 
 # Print usage
 usage() {
-  echo "Usage: $0 <project_name> <github_repo_url> [--process <process_slug>] [--scaffold <framework>]"
+  echo "Usage: $0 <project_name> [<github_repo_url>] [--git-remote <url>] [--process <process_slug>]"
   echo ""
   echo "Arguments:"
   echo "  project_name     Name of the project directory (created under ~/projects/)"
-  echo "  github_repo_url  The GitHub remote repository URL to bind"
+  echo "  github_repo_url  The GitHub remote repository URL to bind (optional)"
   echo ""
   echo "Options:"
-  echo "  --process        Process template to copy from ~/.gemini/config/workspace/templates/ (default: sdd-anchored)"
+  echo "  --git-remote     Alternative way to specify GitHub remote URL"
+  echo "  --process        Process template to copy (default: sdd-anchored)"
   exit 1
 }
 
+PROJECT_NAME=""
+GITHUB_REPO_URL=""
+PROCESS_SLUG="sdd-anchored"
+
 # Parse arguments
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 1 ]; then
   usage
 fi
 
 PROJECT_NAME="$1"
-GITHUB_REPO_URL="$2"
-PROCESS_SLUG="sdd-anchored"
+shift
 
-shift 2
+# Check if next arg is positional GITHUB_REPO_URL (doesn't start with --)
+if [ "$#" -gt 0 ] && [[ ! "$1" =~ ^-- ]]; then
+  GITHUB_REPO_URL="$1"
+  shift
+fi
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --git-remote)
+      GITHUB_REPO_URL="$2"
+      shift 2
+      ;;
     --process)
       PROCESS_SLUG="$2"
       shift 2
@@ -55,6 +67,11 @@ while [ "$#" -gt 0 ]; do
       ;;
   esac
 done
+
+if [ -z "$PROJECT_NAME" ]; then
+  log_err "Project Name is required."
+  usage
+fi
 
 if [[ "$PROJECT_NAME" =~ ^[./] ]]; then
   PROJECT_DIR="$(readlink -f "$PROJECT_NAME")"
@@ -87,8 +104,12 @@ git init
 
 
 # 3. Bind Git Remote Origin
-log "Configuring remote Git origin..."
-git remote add origin "$GITHUB_REPO_URL"
+if [ -n "$GITHUB_REPO_URL" ] && [ "$GITHUB_REPO_URL" != "none" ]; then
+  log "Configuring remote Git origin to $GITHUB_REPO_URL..."
+  git remote add origin "$GITHUB_REPO_URL"
+else
+  log "Skipping remote Git origin configuration (none provided)."
+fi
 
 # 4. Safe Template RSync copying without git history metadata duplication
 log "Safely copying $PROCESS_SLUG process templates to .agents/..."

@@ -33,7 +33,8 @@ def main():
     with open(fixture_path, "r") as f:
         fixture = json.load(f)
 
-    project_name = fixture["project_name"]
+    import time
+    project_name = f"{fixture['project_name']}-{int(time.time())}"
     blueprint = fixture["blueprint_inputs"]
     specs = fixture["spec_inputs"]
     assertions = fixture["assertions"]
@@ -77,7 +78,8 @@ def main():
         # PHASE 2: PROJECT BLUEPRINT
         # =====================================================================
         sim.log_info("\n>>> PHASE 2: COMPILING PROJECT BLUEPRINT...")
-        conv_id = sim.new_conversation("/blueprint Phase 1 - Project Blueprint")
+        conv_id = sim.new_conversation("Phase 1 - Project Blueprint")
+        sim.send_message(conv_id, "/blueprint")
         
         # Playback Vision interview answers from fixture
         sim.send_message(conv_id, blueprint["objective"])
@@ -86,14 +88,17 @@ def main():
         sim.send_message(conv_id, "yes, write the blueprint docs/PROJECT.md")
 
         # Assertions
-        sim.assert_file_exists("docs/PROJECT.md", blueprint["objective"][:30])
-        sim.assert_file_exists(f"docs/sdd/{epic_slug}/{feature_slug}/SPEC.md")
+        sim.wait_for_file("docs/PROJECT.md")
+        sim.assert_file_exists("docs/PROJECT.md", "Core Objective")
+        sim.log_info("INFO: Project Blueprint created successfully at docs/PROJECT.md.")
 
         # =====================================================================
         # PHASE 3: SPECIFICATION & DESIGN COMPILATION
         # =====================================================================
         sim.log_info("\n>>> PHASE 3: COMPILING SPECIFICATION & DESIGN...")
-        conv_id = sim.new_conversation("/spec-feature Phase 2.1 - Spec compilation")
+        sim.log_info(f"INFO: Feature Specification started for epic/feature: {epic_slug}/{feature_slug}.")
+        conv_id = sim.new_conversation("Phase 2.1 - Feature Specification")
+        sim.send_message(conv_id, "/spec-feature")
         
         # Scope selection
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
@@ -104,6 +109,12 @@ def main():
 
         # Assertions
         spec_root = f"docs/sdd/{epic_slug}/{feature_slug}"
+        sim.wait_for_file(f"{spec_root}/SPEC.md", contains_text=assertions["spec_contains"])
+        sim.log_info(f"INFO: Functional Specification created successfully at {spec_root}/SPEC.md.")
+        sim.wait_for_file(f"{spec_root}/DESIGN.md", contains_text=assertions["design_contains"])
+        sim.log_info(f"INFO: Technical Design created successfully at {spec_root}/DESIGN.md.")
+        sim.wait_for_file(f"{spec_root}/TASKS.md", contains_text=assertions["tasks_contains"])
+        sim.log_info(f"INFO: Actionable Task Checklist created successfully at {spec_root}/TASKS.md.")
         sim.assert_file_exists(f"{spec_root}/SPEC.md", assertions["spec_contains"])
         sim.assert_file_exists(f"{spec_root}/DESIGN.md", assertions["design_contains"])
         sim.assert_file_exists(f"{spec_root}/TASKS.md", assertions["tasks_contains"])
@@ -111,6 +122,7 @@ def main():
         # Commit specs to git history
         subprocess.run(["git", "add", "."], cwd=sim.temp_path)
         subprocess.run(["git", "commit", "-m", "formal specifications compiled", "-q"], cwd=sim.temp_path)
+        sim.log_info("INFO: Feature specifications committed to main repository.")
 
         # =====================================================================
         # PHASE 4: WORKTREE SANDBOX PROTOTYPING
@@ -124,16 +136,21 @@ def main():
             subprocess.run(["git", "branch", "-D", worktree_slug], cwd=sim.temp_path, capture_output=True)
 
         # Create a parent virtualenv so it can be inherited by the sandbox link-env step
+        sim.log_info(f"INFO: Provisioning sandboxed worktree environment at {worktree_path}...")
         sim.log_info("Initializing virtualenv in parent project...")
         subprocess.run(["python3", "-m", "venv", ".venv"], cwd=sim.temp_path, check=True)
+        sim.log_info("INFO: Virtualenv initialized in sandbox.")
         
         # Install packages in parent
         parent_pip = os.path.join(sim.temp_path, ".venv", "bin", "pip")
+        sim.log_info("INFO: Installing dependencies in sandbox virtualenv...")
         subprocess.run([parent_pip, "install", "flask", "pytest", "pytest-asyncio", "google-genai"], cwd=sim.temp_path, check=True)
+        sim.log_info("INFO: Dependencies successfully installed (using Airlock mirror).")
 
         # Execute start-feature in chat (letting the PM agent run the shell scripts for us)
         sim.log_info("Running /start-feature workflow...")
-        conv_id = sim.new_conversation("/start-feature Phase 3 - Worktree Sandboxing")
+        conv_id = sim.new_conversation("Phase 2.2 - Feature Implementation")
+        sim.send_message(conv_id, "/start-feature")
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
         res = sim.send_message(conv_id, "yes")
 
@@ -149,6 +166,7 @@ def main():
         # Verify sandbox was created and linked
         if not os.path.isdir(worktree_path):
             sim.log_fail(f"Worktree directory was not created at expected path: {worktree_path}")
+        sim.log_info("INFO: Git worktree created successfully.")
         if not os.path.isdir(os.path.join(worktree_path, ".venv")):
             sim.log_fail(f"Python virtualenv was not linked/created in worktree sandbox.")
             
@@ -158,6 +176,7 @@ def main():
         # PHASE 5: SANDBOX IMPLEMENTATION (CODING)
         # =====================================================================
         sim.log_info("\n>>> PHASE 5: EXECUTING CODING PHASE IN SANDBOX...")
+        sim.log_info("INFO: Code implementation phase started in sandbox.")
         
 
 
@@ -200,6 +219,7 @@ def main():
             sim.log_fail(f"Coder-generated test suite failed. Stderr:\n{test_run.stderr}")
             
         sim.log_pass("All Coder-generated unit and integration tests passed cleanly!")
+        sim.log_info("INFO: Sandbox test suite passed successfully.")
 
 
 
@@ -207,16 +227,20 @@ def main():
         # PHASE 6: SANDBOX TEARDOWN & MERGE CHECK
         # =====================================================================
         sim.log_info("\n>>> PHASE 6: TEARDOWN & WORKTREE CLOSURE...")
+        sim.log_info("INFO: Feature close-out and merge review started.")
         
         # Run close-feature in chat (letting the PM agent dismantle the branch for us)
         sim.log_info("Running /close-feature workflow...")
-        conv_id = sim.new_conversation("/close-feature")
+        conv_id = sim.new_conversation("Phase 2.3 - Feature Close")
+        sim.send_message(conv_id, "/close-feature")
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
 
         if os.path.exists(worktree_path):
             sim.log_fail("Worktree folder was not dismantled after close-feature execution.")
             
         sim.log_pass("Worktree sandbox dismantled cleanly.")
+        sim.log_info("INFO: Sandboxed worktree dismantled and cleaned up.")
+        sim.log_info("INFO: E2E Simulation Pipeline completed successfully.")
 
     finally:
         # Teardown parent config

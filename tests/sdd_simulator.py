@@ -62,7 +62,14 @@ class SDDSimulator:
                 "id": self.project_id,
                 "name": self.project_name,
                 "projectResources": {
-                    "resources": [{"folderUri": f"file://{self.temp_path}"}]
+                    "resources": [
+                        {
+                            "gitFolder": {
+                                "folderUri": f"file://{self.temp_path}",
+                                "allowWrite": True
+                            }
+                        }
+                    ]
                 }
             }
 
@@ -113,7 +120,14 @@ class SDDSimulator:
             "id": self.project_id,
             "name": self.temp_path,
             "projectResources": {
-                "resources": [{"folderUri": f"file://{self.temp_path}"}]
+                "resources": [
+                    {
+                        "gitFolder": {
+                            "folderUri": f"file://{self.temp_path}",
+                            "allowWrite": True
+                        }
+                    }
+                ]
             }
         }
 
@@ -190,6 +204,24 @@ class SDDSimulator:
             if content_does_not_contain in content:
                 self.log_fail(f"Assertion failed: File {rel_path} contains unexpected text '{content_does_not_contain}'")
         self.log_pass(f"File {rel_path} does not contain '{content_does_not_contain}'")
+
+    def wait_for_file(self, rel_path, contains_text=None, timeout=300, poll_interval=5):
+        import time
+        self.log_info(f"Waiting for file to be generated: {rel_path}...")
+        start_time = time.time()
+        abs_path = os.path.join(self.temp_path, rel_path)
+        while time.time() - start_time < timeout:
+            if os.path.isfile(abs_path):
+                if contains_text:
+                    with open(abs_path, "r") as f:
+                        if contains_text in f.read():
+                            self.log_pass(f"File generated with expected content: {rel_path}")
+                            return True
+                else:
+                    self.log_pass(f"File generated: {rel_path}")
+                    return True
+            time.sleep(poll_interval)
+        self.log_fail(f"Timeout waiting for file: {rel_path}")
 
     def cleanup(self):
         self.log_info("Cleaning up simulation environment...")

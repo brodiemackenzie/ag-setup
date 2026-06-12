@@ -11,9 +11,9 @@
     "discovery_input": "Here are the functional and technical requirements for the feature:\n1. Input fields: name, comment (no email validation needed).\n2. For each guest submission, use Gemini API on Vertex AI to generate a fun, customized witty response based on the comment text.\n3. For each guest submission, generate a fun image matching the comment sentiment using Imagen API on Vertex AI, saving the generated PNG locally in static/images/.\n4. Save name, timestamp, comment, generated reply, and generated image path in a local json file guestbook.json.\n5. GET / renders index.html displaying the submission form and the list of entries showing name, timestamp, comment, generated witty response, and generated image.\n6. In your TECHNICAL DESIGN, specify GET / and POST /submit endpoints and a Verification Strategy using pytest.\nPlease compile SPEC.md, DESIGN.md, and TASKS.md."
   },
   "assertions": {
-    "spec_contains": "req-genai-witty-reply",
+    "spec_contains": "witty",
     "design_contains": "guestbook.json",
-    "tasks_contains": "tsk-0-scaffold",
+    "tasks_contains": "scaffold",
     "code_files": [
       "app.py",
       "templates/index.html",

@@ -22,7 +22,15 @@
       "./tests/*",
       "./.docs_build/*",
       "./*.py",
-      "./spec_change_proposal.md"
+      "./spec_change_proposal.md",
+      "./.venv/*",
+      "./node_modules/*",
+      "./target/*",
+      "./requirements.txt",
+      "./package.json",
+      "./package-lock.json",
+      "./Cargo.toml",
+      "./Cargo.lock"
     ]
   },
   "cascade_config": {

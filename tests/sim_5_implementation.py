@@ -12,7 +12,7 @@ import sys
 from sdd_simulator import SDDSimulator
 
 def main():
-    sim = SDDSimulator("simulated-implementation-project")
+    sim = SDDSimulator("generative-guestbook-test-simulator-sandbox")
     
     # 1. Setup workspace (uses default strict sandbox permissions)
     sim.setup_workspace()
@@ -27,14 +27,7 @@ def main():
         dirs_exist_ok=True
     )
 
-    # 3. Create a python virtual environment inside the workspace and install requirements
-    # This simulates having linked python environment inside the sandbox
-    sim.log_info("Setting up Python virtual environment and installing packages...")
-    subprocess.run(["python3", "-m", "venv", ".venv"], cwd=sim.temp_path)
-    
-    # Run pip install to install Flask, pytest, and google-genai
-    pip_path = os.path.join(sim.temp_path, ".venv", "bin", "pip")
-    subprocess.run([pip_path, "install", "flask", "pytest", "pytest-asyncio", "google-genai"], cwd=sim.temp_path, capture_output=True)
+
 
     # 4. Seed the specifications from the fixture folder
     sim.log_info("Seeding Guestbook specification documents from fixtures...")
@@ -78,14 +71,20 @@ def main():
         sim.log_info("Verifying implementation outcomes...")
         
         # 7. Physical File Assertions
+        sim.wait_for_file("tests/test_app.py", timeout=180)
         sim.assert_file_exists("app.py")
         sim.assert_file_exists("templates/index.html")
         sim.assert_file_exists("tests/test_app.py")
         
+        # Assert that the Coder agent successfully created a local virtualenv
+        if not os.path.isdir(os.path.join(sim.temp_path, ".venv")):
+            sim.log_fail("Python virtualenv was not created inside the sandbox by the Coder agent.")
+        sim.log_info("INFO: Python virtualenv exists in sandbox.")
+
         # Run pytest inside the virtualenv to verify the tests created by the agent pass
-        pytest_bin = os.path.join(sim.temp_path, ".venv", "bin", "pytest")
+        python_bin = os.path.join(sim.temp_path, ".venv", "bin", "python")
         sim.log_info("Running generated test suite inside virtualenv...")
-        test_run = subprocess.run([pytest_bin, "tests/test_app.py"], cwd=sim.temp_path, capture_output=True, text=True)
+        test_run = subprocess.run([python_bin, "-m", "pytest", "tests/test_app.py"], cwd=sim.temp_path, capture_output=True, text=True)
         
         print(test_run.stdout)
         

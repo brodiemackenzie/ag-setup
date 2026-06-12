@@ -9,6 +9,7 @@ import json
 import os
 import uuid
 import sys
+import shutil
 
 class SDDSimulator:
     def __init__(self, project_name, workspace_dir=None, reuse_active=False):
@@ -42,12 +43,22 @@ class SDDSimulator:
 
     def log_fail(self, msg):
         print(f"\033[1;31m[FAIL]\033[0m {msg}", file=sys.stderr)
-        self.cleanup()
+        # self.cleanup()  # Retain failure state on host disk for debugging
         sys.exit(1)
 
     def setup_workspace(self, initial_files=None, permission_grants=None):
         self.log_info(f"Cleaning previous sandbox residues at {self.temp_path}...")
-        subprocess.run(["rm", "-rf", self.temp_path])
+        if os.path.exists(self.temp_path):
+            # Empty the directory but preserve the directory node itself for mounts
+            for item in os.listdir(self.temp_path):
+                item_path = os.path.join(self.temp_path, item)
+                try:
+                    if os.path.isdir(item_path) and not os.path.islink(item_path):
+                        shutil.rmtree(item_path)
+                    else:
+                        os.remove(item_path)
+                except Exception as e:
+                    self.log_info(f"Warning: failed to remove {item_path}: {e}")
         if self.config_path and os.path.exists(self.config_path):
             os.remove(self.config_path)
 
@@ -77,11 +88,14 @@ class SDDSimulator:
             if permission_grants:
                 config["permissionGrants"] = permission_grants
             else:
-                # Default: restrict write access strictly to sandbox, block writing to parent workspace
+                # Default: restrict write access strictly to sandbox, allow worktrees directory, block framework root
+                worktrees_dir = os.path.expanduser("~/.gemini/jetski/worktrees")
                 config["permissionGrants"] = {
                     "allow": [
                         f"read_file({self.temp_path})",
-                        f"write_file({self.temp_path})"
+                        f"write_file({self.temp_path})",
+                        f"read_file({worktrees_dir})",
+                        f"write_file({worktrees_dir})"
                     ],
                     "deny": [
                         f"write_file({self.workspace_dir})"
@@ -134,11 +148,14 @@ class SDDSimulator:
         if permission_grants:
             config["permissionGrants"] = permission_grants
         else:
-            # Sandbox rules: restrict write access to the worktree folder only
+            # Sandbox rules: restrict write access to the worktree folder only, allow worktrees directory, block framework root
+            worktrees_dir = os.path.expanduser("~/.gemini/jetski/worktrees")
             config["permissionGrants"] = {
                 "allow": [
                     f"read_file({self.temp_path})",
-                    f"write_file({self.temp_path})"
+                    f"write_file({self.temp_path})",
+                    f"read_file({worktrees_dir})",
+                    f"write_file({worktrees_dir})"
                 ],
                 "deny": [
                     f"write_file({self.workspace_dir})"
@@ -229,5 +246,14 @@ class SDDSimulator:
             os.remove(self.config_path)
             self.log_pass("Temporary project config deleted.")
         if os.path.exists(self.temp_path):
-            subprocess.run(["rm", "-rf", self.temp_path])
-            self.log_pass("Temporary sandbox directory cleaned.")
+            # Empty the directory but preserve the directory node itself
+            for item in os.listdir(self.temp_path):
+                item_path = os.path.join(self.temp_path, item)
+                try:
+                    if os.path.isdir(item_path) and not os.path.islink(item_path):
+                        shutil.rmtree(item_path)
+                    else:
+                        os.remove(item_path)
+                except Exception as e:
+                    pass
+            self.log_pass("Temporary sandbox directory cleaned (retaining mount folder).")

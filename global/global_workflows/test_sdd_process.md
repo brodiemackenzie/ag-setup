@@ -1,72 +1,53 @@
 ---
-description: Launch and manage the Spec-Driven Development (SDD) simulation test suite in both isolated and chained modes.
+description: Launch and manage the Spec-Driven Development (SDD) simulation test suite step-by-step.
 ---
 
 # Test Pipeline Management Workflow
 
-You must act as the **sdd-project-manager** to execute this workflow. You will coordinate running the Python simulation scenarios and stream output logs back to the user.
+You must act as the **sdd-project-manager** to execute this workflow. You will coordinate running the Python simulation scenarios step-by-step and report progress to the user.
 
-## Simulation Actions Guide
-Before running, explain the difference between the testing actions to the user if they ask or if it's the first execution:
+## Simulation Stages Guide
+This workflow executes the SDD process step-by-step. The process is completely **stateless**; each stage reads from the repository's physical files. 
 
-*   **Chained Mode (End-to-End)**:
-    *   Runs the entire SDD lifecycle sequentially in a single flow (Blueprint ➔ Spec ➔ Code ➔ Teardown).
-    *   *Usage*: Select `chained`.
-    *   *Command Line Example*: `./test_sdd_process.sh` or `./test_sdd_process.sh --fixture generative_guestbook.json`
-*   **Isolated Mode (Phase-Specific)**:
-    *   Runs a targeted simulation of a *single* phase in isolation. It uses static mock files to simulate previous steps, allowing you to test specific agent behaviors quickly without running the full E2E flow.
-    *   *Usage*: Select `isolated` and pick a phase.
-    *   *Command Line Example*: `./test_sdd_process.sh --phase blueprint`
-*   **Clean Mode (Tear Down)**:
-    *   Deregisters a test project from Jetski Hub and deletes the target folder from disk.
-    *   *Usage*: Select `clean` and specify the project name/path.
-    *   *Command Line Example*: `./test_sdd_process.sh --clean sandbox/my-test-project`
+Because of container jail isolation boundaries, you must run the stages in their respective workspaces:
 
----
+### 1. In the Parent Repository Chat:
+*   `/test_sdd_process --stage=bootstrap` ➔ Sets up the git sandbox environment.
+*   `/test_sdd_process --stage=blueprint` ➔ Generates `docs/PROJECT.md` inside the container.
+*   `/test_sdd_process --stage=specs` ➔ Drafts `SPEC.md`, `DESIGN.md`, and `TASKS.md` inside the container and commits them.
+*   `/test_sdd_process --stage=worktree` ➔ PM provisions the Git worktree branch on the host and copies simulation files.
 
-## 1. Select Action
-Ask the user:
-*"Which action would you like to perform? [isolated / chained / clean]"*
+> [!IMPORTANT]
+> Once the `worktree` stage completes, you **must switch your active workspace in the Jetski UI** to the newly created feature worktree workspace.
 
----
+### 2. In the Feature Worktree Workspace Chat:
+*   Have the Coder agent implement the code and verify the test suite.
+*   `/test_sdd_process --stage=implement` ➔ Runs local E2E simulation assertions (verifies files exist and executes the pytest suite).
 
-## 2. Execute Isolated Scenarios
-If the user selects **`isolated`**:
-1.  Ask the user:
-    *"Which isolated scenario would you like to execute? [bootstrap / blueprint / reconciliation / security / implementation]"*
-2.  Map the user's choice to the unified runner command:
-    *   `bootstrap` ➔ `./test_sdd_process.sh --phase bootstrap`
-    *   `blueprint` ➔ `./test_sdd_process.sh --phase blueprint`
-    *   `reconciliation` ➔ `./test_sdd_process.sh --phase reconciliation`
-    *   `security` ➔ `./test_sdd_process.sh --phase security`
-    *   `implementation` ➔ `./test_sdd_process.sh --phase implementation`
-3.  Propose running the command:
-    *   Execute the mapped command using your shell tool with Cwd set to the project root directory.
-4.  Stream the stdout and stderr back to the user in chat.
-5.  Report final pass/fail results.
+> [!IMPORTANT]
+> Once the `implement` stage passes, you **must switch your active workspace in the Jetski UI back to the parent repository**.
+
+### 3. In the Parent Repository Chat:
+*   `/test_sdd_process --stage=close` ➔ PM agent merges the feature and dismantles the worktree.
 
 ---
 
-## 3. Execute Chained E2E Pipeline Scenarios
-If the user selects **`chained`**:
-1.  Ask the user:
-    *"Which JSON fixture file from tests/fixtures/ should we use? (Press Enter for default: generative_guestbook.json)"*
-2.  If the user provides a custom name (e.g. `todo_app.json`), format the command:
-    `./test_sdd_process.sh --fixture <fixture_name>`
-    Otherwise, default to:
-    `./test_sdd_process.sh`
-3.  Propose running the command:
-    *   Execute the mapped script command in the background.
-4.  Stream stdout log chunks to the chat to show live step progress (Phase 2 through Phase 6).
-5.  Report final pass/fail results upon script completion.
+## Execution Guide
 
----
-
-## 4. Clean Up Test Project
-If the user selects **`clean`**:
-1.  Ask the user:
-    *"Which project name or directory path should we clean up?"*
-2.  Propose running the command:
-    `./test_sdd_process.sh --clean <project_name_or_path>`
-3.  Stream the stdout and stderr back to the user in chat.
-4.  Confirm when the project is successfully deregistered and deleted.
+1.  **Parse Stage Argument**:
+    *   Read the user's prompt. Find the `--stage` flag (e.g. `--stage=bootstrap` or `--stage specs`).
+    *   If no stage flag is provided, halt and reply: *"Please specify a stage to execute, e.g. `/test_sdd_process --stage=bootstrap`"*
+2.  **Verify Active Workspace Context**:
+    *   If executing stage `implement`, verify that the current working directory path contains `worktrees/`. If not, warn the user to switch to the Coder workspace first.
+    *   If executing any other stage, verify that the current working directory is the parent repository (does NOT contain `worktrees/`). If not, warn the user to switch back to the parent workspace first.
+3.  **Execute Command**:
+    *   Map the stage to: `python3 tests/sim_sdd_process.py --stage <stage_name>`
+    *   Run the command in the workspace directory.
+4.  **Report Progress**:
+    *   Stream the output logs and report pass/fail.
+    *   If the stage completed was `worktree`, show a prominent alert warning:
+        > [!IMPORTANT]
+        > The Git worktree has been provisioned. Please **switch to the new feature worktree workspace in the UI sidebar** and open a new chat to run `/test_sdd_process --stage=implement`.
+    *   If the stage completed was `implement`, show a prominent alert warning:
+        > [!IMPORTANT]
+        > Implementation verification complete. Please **switch back to the parent workspace in the UI sidebar** and run `/test_sdd_process --stage=close` to finalize.

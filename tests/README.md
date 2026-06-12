@@ -66,6 +66,23 @@ When executing python simulation scripts inside a local IDE workspace, calls to 
 
 This is because the local IDE-bound server does not initialize the persistent project store in IDE mode, causing the server to panic when it receives workspace configuration data from the CLI client.
 
+## ⚠️ Sandboxing / NsJail Mount Limitations (Timeout during E2E Pipeline)
+When executing the automated integration test script (`sim_sdd_process.py`), the background Jetski server might crash with a mount namespace error:
+`remote error: run bash: fork/exec /usr/bin/bash: no such file or directory`
+or subsequent tool calls might fail with:
+`directory does not exist`
+
+This happens due to rapid workspace directory creation and Python `.venv` setup, which can trigger file-watcher leaks or mount collisions in NsJail. When this occurs, the simulated PM agent gets stuck in a self-debugging loop, causing the client-side `agentapi` call to timeout.
+
+### Workaround: Disable Terminal Sandboxing
+To bypass this sandbox mounting error during automated E2E runs, temporarily disable terminal sandboxing in the Jetski CLI config:
+1. Create a CLI settings file:
+   ```bash
+   mkdir -p ~/.gemini/jetski/cli
+   echo '{"enableTerminalSandbox": false}' > ~/.gemini/jetski/cli/settings.json
+   ```
+2. Restart the Jetski Hub Server.
+
 ### Manual E2E Playback Workaround
 To verify the SDD pipeline locally, you must play back the E2E lifecycle manually inside your JetSki chat conversation window using the slash commands:
 

@@ -8,7 +8,6 @@
 #
 # Subcommands:
 #   prototype       Create worktree branch and scaffold empty SDD feature capsule
-#   link-env        Dynamic runtime binding (Python/Node.js/Rust)
 #   close-feature   Dismantle, merge branch, and delete worktree folders safely
 #
 
@@ -25,7 +24,7 @@ log_err() {
 
 if [ "$#" -lt 3 ]; then
   echo "Usage: $0 <subcommand> <epic_slug> <feature_slug>"
-  echo "Subcommands: prototype, link-env, close-feature"
+  echo "Subcommands: prototype, close-feature"
   exit 1
 fi
 
@@ -56,6 +55,15 @@ case "$SUBCOMMAND" in
 
     # Add Git worktree
     git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH"
+
+    # Copy simulation files to worktree tests folder so they are available in the worktree jail
+    log "Copying E2E simulation scripts into the worktree tests folder..."
+    mkdir -p "$WORKTREE_PATH/tests"
+    cp -r "$PARENT_ROOT/tests/fixtures" "$WORKTREE_PATH/tests/"
+    cp "$PARENT_ROOT/tests/sim_sdd_process.py" "$WORKTREE_PATH/tests/"
+    cp "$PARENT_ROOT/tests/sdd_simulator.py" "$WORKTREE_PATH/tests/"
+    cp "$PARENT_ROOT/tests/cleanup_project.py" "$WORKTREE_PATH/tests/"
+    cp "$PARENT_ROOT/test_sdd_process.sh" "$WORKTREE_PATH/"
 
     log "Worktree provisioning complete! Workspace ready for implementation."
 
@@ -94,65 +102,7 @@ if not found:
 "
     ;;
 
-  link-env)
-    log "Binding runtime environments in '$WORKTREE_PATH'..."
-    if [ ! -d "$WORKTREE_PATH" ]; then
-      log_err "Worktree path not found: $WORKTREE_PATH"
-      exit 1
-    fi
 
-    # Go inside worktree
-    cd "$WORKTREE_PATH"
-
-    SELECTED_ENVS=("${@:4}")
-
-    # Helper function to check if a specific environment should be linked
-    should_link() {
-      local env_name="$1"
-      # If no environments are explicitly requested, default to true (link all detected)
-      if [ ${#SELECTED_ENVS[@]} -eq 0 ]; then
-        return 0
-      fi
-      # Otherwise check if it is in the requested list
-      for item in "${SELECTED_ENVS[@]}"; do
-        if [ "$item" = "$env_name" ]; then
-          return 0
-        fi
-      done
-      return 1
-    }
-
-    # 1. Node.js / NPM Linkage
-    if should_link "node"; then
-      if [ -f "$PARENT_ROOT/package.json" ] || [ -d "$PARENT_ROOT/node_modules" ]; then
-        log "Node.js detected. Symlinking node_modules..."
-        rm -rf node_modules
-        ln -sf "$PARENT_ROOT/node_modules" ./node_modules
-      fi
-    fi
-
-    # 2. Python Virtualenv Linkage
-    if should_link "python"; then
-      if [ -d "$PARENT_ROOT/.venv" ]; then
-        log "Python detected. Inheriting main virtualenv packages..."
-        rm -rf .venv
-        python3 -m venv --system-site-packages .venv
-      fi
-    fi
-
-    # 3. Rust Cargo target Linkage
-    if should_link "rust"; then
-      if [ -f "$PARENT_ROOT/Cargo.toml" ]; then
-        log "Rust detected. Symbolic linking target directories..."
-        mkdir -p target
-        # Link cargo target to avoid clean compile overheads
-        mkdir -p "$PARENT_ROOT/target/worktrees_cargo/${EPIC_SLUG}_${FEATURE_SLUG}"
-        ln -sf "$PARENT_ROOT/target/worktrees_cargo/${EPIC_SLUG}_${FEATURE_SLUG}" ./target
-      fi
-    fi
-
-    log "Binds complete! Workspace environment successfully configured."
-    ;;
 
   close-feature)
     log "Checking worktree branch status..."

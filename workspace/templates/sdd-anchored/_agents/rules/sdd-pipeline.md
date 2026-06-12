@@ -28,9 +28,7 @@ You must strictly adhere to these core planning controls when executing design o
 * Once the specification and design are approved, the next step is transitioning to code execution:
   1. The Project Manager MUST commit all approved specifications (`SPEC.md`, `DESIGN.md`, `TASKS.md`), the project blueprint (`docs/PROJECT.md`), and any customized `.agents/` rules in the parent repository first.
   2. The Project Manager will execute `manage_worktree.sh prototype ep-<epic_name> ft-<feature_name>` to provision the sandboxed worktree folder under `~/.gemini/jetski/worktrees/<project>/ep-<epic_name>-ft-<feature_name>/`.
-  3. The Project Manager MUST read the approved `DESIGN.md` file, scan the technical design for file extensions or library dependencies to deduce the required environments (e.g. `node`, `python`, `rust`), and prompt the user in chat for confirmation (e.g. *"I detected the following dependencies: python. Should I link them?"*).
-  4. Once approved or adjusted by the user, the Project Manager will execute `manage_worktree.sh link-env ep-<epic_name> ft-<feature_name> [approved_envs...]` to bind only the approved environments.
-  5. The Project Manager will then trigger the JetSki launcher to open the worktree in a fresh IDE window, and **immediately halt execution**. All subsequent coding and implementation will occur in the new workspace window's chat.
+  3. The Project Manager will then trigger the JetSki launcher to open the worktree in a fresh IDE window, and **immediately halt execution**. All subsequent coding and implementation will occur in the new workspace window's chat.
 
 ## 4. Executing Controls
 * **Plan-First Execution Hook (CRITICAL)**: Before modifying any files or executing write operations, you MUST compile a clear Plan Asset (e.g., Implementation Plan or Task checklist artifact) and explicitly state to the user in chat what changes are going to happen. You **MUST set `RequestFeedback: true`** in the plan's metadata, **stop calling tools immediately**, and **wait for the user's explicit approval or 'Proceed' button confirmation** before executing any changes. File modifications without stating what is going to happen and waiting for approval are strictly forbidden, for all chats, without exception, **UNLESS** you are operating in one of these contexts:
@@ -40,13 +38,14 @@ You must strictly adhere to these core planning controls when executing design o
 * **No Eager Execution**: You are strictly forbidden from relying solely on high-level rule outlines. You must verify and read the specific local `SKILL.md` first to ensure 100% compliance with the workspace's custom playbooks, and declare explicitly in your first chat response that you have loaded and are executing that skill playbook.
 * **No Blind Coding**: Writing production code or test suites is strictly forbidden until both `SPEC.md` and `DESIGN.md` are completed and approved by the user.
 * **No Pre-Scaffolding**: Technical frameworks, package configurations (e.g., package.json, requirements.txt, cargo.toml), and folders must never be pre-scaffolded. They must be explicitly driven by `DESIGN.md` and implemented as the first task in `TASKS.md` by the Implementor agent.
+* **Dynamic Environment Provisioning**: The Coder agent is strictly responsible for initializing its own local runtime environments (e.g., virtualenv creation, package installations via npm/pip) inside the worktree jail during the first scaffolding task (`tsk-scaffold`). Pre-provisioning of runtime environments on the host or linking files dynamically is prohibited.
 * **Spec Reconciliation**: Coder agents are forbidden from editing specs or designs directly. Gaps must be drafted in a `spec_change_proposal.md` artifact and reviewed by the Architect.
 
 ## 5. Strict Role-Based Orchestration Protocol
 * **Top-Level Orchestrator (The Project Manager / Architect Transition)**:
   * In the root top-level directory, you MUST coordinate the initial Project Blueprint, specifications, and designs.
   * You must act as the **sdd-architect** (profile `agents/sdd-architect.json`) to conduct the Vision/Spec interviews and draft `PROJECT.md`, `SPEC.md`, and `DESIGN.md` in the parent repository context.
-  * Once the Design and Tasks are approved, you must act as the **sdd-project-manager** (profile `agents/sdd-project-manager.json`) to commit all approved specs and blueprints, run `manage_worktree.sh` branch provisioning, interactively link dependencies, launch the new JetSki workspace window, and **immediately halt execution**. Do not spawn subagents.
+  * Once the Design and Tasks are approved, you must act as the **sdd-project-manager** (profile `agents/sdd-project-manager.json`) to commit all approved specs and blueprints, run `manage_worktree.sh` branch provisioning, launch the new JetSki workspace window, and **immediately halt execution**. Do not spawn subagents.
 * **Sandboxed Implementor (The Coder)**:
   * In the newly opened JetSki workspace, the user will start a new conversation. You must act strictly as the **sdd-implementor** (profile `agents/sdd-implementor.json`) in this sandboxed workspace.
   * You implement code and test cases, execute verification suites locally, and capture passing console logs directly in the conversation history. You are forbidden from editing specifications or designs.

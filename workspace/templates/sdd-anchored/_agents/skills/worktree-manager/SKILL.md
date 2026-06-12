@@ -25,21 +25,7 @@ To begin developing a new feature, the Project Manager agent or user runs the `p
   * `docs/sdd/<epic_slug>/<feature_slug>/DESIGN.md`
   * `docs/sdd/<epic_slug>/<feature_slug>/TASKS.md`
 
-### 2. Binds Workspace Environments (`link-env`)
-Once the worktree is provisioned, bind local runtime environments so that standard tools operate without heavy re-installation:
-```bash
-.agents/skills/worktree-manager/scripts/manage_worktree.sh link-env <epic_slug> <feature_slug>
-```
-**Actions Performed**:
-* **Python**: Automatically configures virtualenvs inside the worktree to inherit the root project virtualenv package repository:
-  ```bash
-  python3 -m venv --system-site-packages .venv
-  ```
-* **Node.js**: Dynamic symlinking of target `node_modules` from the parent project:
-  ```bash
-  ln -s ../../../node_modules ./node_modules
-  ```
-* **Rust**: Auto-creates a symbolic link mapping `target/` cache directories to prevent recompilation delays.
+
 
 ### 3. Merging & Deleting a Feature Capsule (`close-feature`)
 Once verification tests are passing, safely close and dismantle the worktree:

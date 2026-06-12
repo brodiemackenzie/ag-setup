@@ -34,7 +34,7 @@ Once the user approves or adjusts the parameters:
     *(e.g., `./manage_worktree.sh link-env ep-guest-submissions ft-submission-form python`)*
 3.  Start the implementation conversation in the new worktree sandbox. Run the `agentapi` command with the working directory (`Cwd`) set to the absolute path of the worktree (`~/.gemini/jetski/worktrees/<project_name>/ep-<epic>-ft-<feature>`):
     ```bash
-    agentapi new-conversation "Please read the specifications at docs/sdd/ep-<epic>/ft-<feature>/ and implement the tasks checklist in TASKS.md using TDD loops."
+    agentapi new-conversation "Phase 4 - Sandboxed Implementation: Please read the specifications at docs/sdd/ep-<epic>/ft-<feature>/ and implement the tasks checklist in TASKS.md using TDD loops."
     ```
 4.  Capture the `conversationId` from the command output.
 5.  Direct the user:

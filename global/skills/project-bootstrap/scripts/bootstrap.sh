@@ -78,7 +78,20 @@ if [[ "$PROJECT_NAME" =~ ^[./] ]]; then
 else
   PROJECT_DIR="$HOME/projects/$PROJECT_NAME"
 fi
-TEMPLATES_DIR="${GEMINI_WORKSPACE_DIR:-${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/config/workspace}}/templates/$PROCESS_SLUG"
+
+# Resolve framework root early (while relative BASH_SOURCE is still valid)
+SCRIPT_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+FRAMEWORK_ROOT="$(readlink -f "$SCRIPT_PATH/../../../../")"
+
+# Determine if we are installing in test mode
+IS_TEST_TEMPLATE=false
+EFFECTIVE_PROCESS_SLUG="$PROCESS_SLUG"
+if [ "$PROCESS_SLUG" = "sdd-anchored-test" ]; then
+  IS_TEST_TEMPLATE=true
+  EFFECTIVE_PROCESS_SLUG="sdd-anchored"
+fi
+
+TEMPLATES_DIR="${GEMINI_WORKSPACE_DIR:-${GEMINI_TEMPLATES_DIR:-$HOME/.gemini/config/workspace}}/templates/$EFFECTIVE_PROCESS_SLUG"
 
 # 1. Validation Checks
 if [ -d "$PROJECT_DIR" ]; then
@@ -144,6 +157,17 @@ fi
 log "Safely copying $PROCESS_SLUG process templates to .agents/..."
 mkdir -p .agents
 rsync -av --exclude='.git' "$TEMPLATES_DIR/_agents/" ".agents/"
+
+if [ "$IS_TEST_TEMPLATE" = true ]; then
+  log "Test template requested. Copying E2E testing framework to project root..."
+  
+  log "Copying tests/ to $PROJECT_DIR/tests/..."
+  rsync -av --exclude='.git' --exclude='sandbox' "$FRAMEWORK_ROOT/tests/" "tests/"
+  
+  log "Copying test_sdd_process.sh to $PROJECT_DIR/test_sdd_process.sh..."
+  cp "$FRAMEWORK_ROOT/test_sdd_process.sh" "test_sdd_process.sh"
+  chmod +x test_sdd_process.sh
+fi
 
 # 7. Setup GitIgnore additions
 log "Updating .gitignore to exclude local agent telemetry and worktree files..."

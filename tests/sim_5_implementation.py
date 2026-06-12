@@ -18,8 +18,11 @@ def main():
     sim.setup_workspace()
     
     # 2. Copy process rules & playbooks templates to `.agents`
+    templates_src = os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents")
+    if not os.path.isdir(templates_src):
+        templates_src = os.path.join(sim.workspace_dir, ".agents")
     shutil.copytree(
-        os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents"),
+        templates_src,
         os.path.join(sim.temp_path, ".agents"),
         dirs_exist_ok=True
     )
@@ -66,7 +69,7 @@ def main():
         sim.log_info("Starting Implementor agent coding flow...")
         # Instruct the agent to read the spec and implement the feature
         conv_id = sim.new_conversation(
-            "Please read the specifications at docs/sdd/ep-guest-submissions/ft-submission-form/ and implement the tasks checklist in TASKS.md."
+            "Phase 4 - Sandboxed Implementation: Please read the specifications at docs/sdd/ep-guest-submissions/ft-submission-form/ and implement the tasks checklist in TASKS.md."
         )
         
         # 6. We let the agent cascade execute (it should run its tools to write app.py, templates/index.html, etc. and write pytest tests).

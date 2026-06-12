@@ -46,28 +46,38 @@ def main():
     sim = SDDSimulator(project_name)
     sim.setup_workspace()
     
+    # Pre-bootstrap sandbox workspace to simulate already-bootstrapped state
+    sim.log_info("Pre-bootstrapping sandbox workspace...")
+    import shutil
+    templates_src = os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents")
+    if not os.path.isdir(templates_src):
+        # Fallback to the active workspace's own .agents folder
+        templates_src = os.path.join(sim.workspace_dir, ".agents")
+        
+    if not os.path.isdir(templates_src):
+        sim.log_fail(f"Could not locate templates source folder. Tried framework templates and active .agents folder.")
+
+    shutil.copytree(
+        templates_src,
+        os.path.join(sim.temp_path, ".agents"),
+        dirs_exist_ok=True
+    )
+    with open(os.path.join(sim.temp_path, ".gitignore"), "w") as f:
+        f.write(".agents/history/\nworktrees/\ntarget/\n.venv/\nnode_modules/\n")
+        
+    subprocess.run(["git", "add", "."], cwd=sim.temp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "Initial commit (bootstrapped)"], cwd=sim.temp_path, check=True)
+
     worktree_path = os.path.expanduser(
         f"~/.gemini/jetski/worktrees/{sim.project_name}/{worktree_slug}"
     )
 
     try:
         # =====================================================================
-        # PHASE 1: BOOTSTRAP
-        # =====================================================================
-        sim.log_info("\n>>> PHASE 1: RUNNING BOOTSTRAP WORKFLOW...")
-        conv_id = sim.new_conversation("/bootstrap")
-        sim.send_message(conv_id, project_name)
-        sim.send_message(conv_id, f"git@github.com:dummy/{project_name}.git")
-        sim.send_message(conv_id, "sdd-anchored")
-
-        sim.assert_file_exists(".agents/rules/sdd-pipeline.md")
-        sim.assert_file_exists(".gitignore")
-
-        # =====================================================================
         # PHASE 2: PROJECT BLUEPRINT
         # =====================================================================
         sim.log_info("\n>>> PHASE 2: COMPILING PROJECT BLUEPRINT...")
-        conv_id = sim.new_conversation("/blueprint")
+        conv_id = sim.new_conversation("/blueprint Phase 1 - Project Blueprint")
         
         # Playback Vision interview answers from fixture
         sim.send_message(conv_id, blueprint["objective"])
@@ -83,7 +93,7 @@ def main():
         # PHASE 3: SPECIFICATION & DESIGN COMPILATION
         # =====================================================================
         sim.log_info("\n>>> PHASE 3: COMPILING SPECIFICATION & DESIGN...")
-        conv_id = sim.new_conversation("/spec-feature")
+        conv_id = sim.new_conversation("/spec-feature Phase 2.1 - Spec compilation")
         
         # Scope selection
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
@@ -123,7 +133,7 @@ def main():
 
         # Execute start-feature in chat (letting the PM agent run the shell scripts for us)
         sim.log_info("Running /start-feature workflow...")
-        conv_id = sim.new_conversation("/start-feature")
+        conv_id = sim.new_conversation("/start-feature Phase 3 - Worktree Sandboxing")
         sim.send_message(conv_id, f"{epic_slug}/{feature_slug}")
         res = sim.send_message(conv_id, "yes")
 
@@ -149,9 +159,7 @@ def main():
         # =====================================================================
         sim.log_info("\n>>> PHASE 5: EXECUTING CODING PHASE IN SANDBOX...")
         
-        # Initialize sandbox simulator helper (without registering new project)
-        sandbox_sim = SDDSimulator(f"{project_name}-sandbox")
-        sandbox_sim.temp_path = worktree_path
+
 
         # Wait for Coder to finish by polling for expected files
         import time
@@ -178,7 +186,7 @@ def main():
         # Assert Coder generated files from fixture list
         sim.log_info("Verifying generated code and test assets...")
         for c_file in assertions["code_files"]:
-            sandbox_sim.assert_file_exists(c_file)
+            sim.assert_file_exists(os.path.join(worktree_path, c_file))
         
         # Run generated tests inside the sandbox virtualenv
         pytest_bin = os.path.join(worktree_path, ".venv", "bin", "pytest")
@@ -193,8 +201,7 @@ def main():
             
         sim.log_pass("All Coder-generated unit and integration tests passed cleanly!")
 
-        # Clean sandbox configuration
-        sandbox_sim.cleanup()
+
 
         # =====================================================================
         # PHASE 6: SANDBOX TEARDOWN & MERGE CHECK

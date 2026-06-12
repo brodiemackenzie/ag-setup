@@ -1,5 +1,5 @@
 {
-  "project_name": "simulated-e2e-pipeline-project",
+  "project_name": "generative-guestbook-test",
   "blueprint_inputs": {
     "objective": "A generative guestbook web application where users can submit guest entries (name, comment) via an HTML form, saved to a simple JSON file database.",
     "tech_stack": "Python (Flask), HTML5, JSON database backend.",

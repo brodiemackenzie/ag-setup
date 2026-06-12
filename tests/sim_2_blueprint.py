@@ -16,8 +16,11 @@ def main():
     
     # 2. Copy rules templates into the workspace to simulate a bootstrapped state
     sim.log_info("Seeding rules templates to simulate bootstrapped workspace...")
+    templates_src = os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents")
+    if not os.path.isdir(templates_src):
+        templates_src = os.path.join(sim.workspace_dir, ".agents")
     shutil.copytree(
-        os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents"),
+        templates_src,
         os.path.join(sim.temp_path, ".agents"),
         dirs_exist_ok=True
     )
@@ -27,7 +30,7 @@ def main():
 
     try:
         # 3. Start Blueprint creation conversation
-        conv_id = sim.new_conversation("Let's start the SDD process")
+        conv_id = sim.new_conversation("/blueprint Phase 1 - Project Blueprint")
         
         # 4. Playback Architect Vision Interview answers
         sim.log_info("Answering Question 1: Core Objective...")

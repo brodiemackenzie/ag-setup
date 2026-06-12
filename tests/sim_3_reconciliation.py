@@ -15,8 +15,11 @@ def main():
     sim.setup_workspace()
     
     # 2. Copy rules templates into the workspace
+    templates_src = os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents")
+    if not os.path.isdir(templates_src):
+        templates_src = os.path.join(sim.workspace_dir, ".agents")
     shutil.copytree(
-        os.path.join(sim.workspace_dir, "workspace", "templates", "sdd-anchored", "_agents"),
+        templates_src,
         os.path.join(sim.temp_path, ".agents"),
         dirs_exist_ok=True
     )
@@ -73,7 +76,7 @@ Add requirement:
 
     try:
         # 4. Start Reconciliation conversation
-        conv_id = sim.new_conversation("Please reconcile the spec change proposal at docs/sdd/ep-guest-submissions/ft-submission-form/spec_change_proposal.md")
+        conv_id = sim.new_conversation("Phase 2.2 - Spec reconciliation: Please reconcile the spec change proposal at docs/sdd/ep-guest-submissions/ft-submission-form/spec_change_proposal.md")
         
         # 5. Confirm reconciliation when asked by Architect
         sim.log_info("Answering Architect confirmation prompt...")

@@ -56,14 +56,16 @@ case "$SUBCOMMAND" in
     # Add Git worktree
     git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH"
 
-    # Copy simulation files to worktree tests folder so they are available in the worktree jail
-    log "Copying E2E simulation scripts into the worktree tests folder..."
-    mkdir -p "$WORKTREE_PATH/tests"
-    cp -r "$PARENT_ROOT/tests/fixtures" "$WORKTREE_PATH/tests/"
-    cp "$PARENT_ROOT/tests/sim_sdd_process.py" "$WORKTREE_PATH/tests/"
-    cp "$PARENT_ROOT/tests/sdd_simulator.py" "$WORKTREE_PATH/tests/"
-    cp "$PARENT_ROOT/tests/cleanup_project.py" "$WORKTREE_PATH/tests/"
-    cp "$PARENT_ROOT/test_sdd_process.sh" "$WORKTREE_PATH/"
+    # Only copy E2E simulation files if they exist in the parent repository (Self-Discovery)
+    if [ -f "$PARENT_ROOT/tests/sim_sdd_process.py" ]; then
+      log "Simulation environment detected. Copying E2E scripts into the worktree tests folder..."
+      mkdir -p "$WORKTREE_PATH/tests"
+      cp -r "$PARENT_ROOT/tests/fixtures" "$WORKTREE_PATH/tests/"
+      cp "$PARENT_ROOT/tests/sim_sdd_process.py" "$WORKTREE_PATH/tests/"
+      cp "$PARENT_ROOT/tests/sdd_simulator.py" "$WORKTREE_PATH/tests/"
+      cp "$PARENT_ROOT/tests/cleanup_project.py" "$WORKTREE_PATH/tests/"
+      cp "$PARENT_ROOT/test_sdd_process.sh" "$WORKTREE_PATH/"
+    fi
 
     log "Worktree provisioning complete! Workspace ready for implementation."
 

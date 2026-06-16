@@ -1,0 +1,10 @@
+/blueprint
+=== PROMPT ===
+A generative guestbook web application where users can submit guest entries (name, comment) via an HTML form, saved to a simple JSON file database.
+=== PROMPT ===
+Python (Flask), HTML5, JSON database backend.
+=== PROMPT ===
+* Epic: ep-guest-submissions
+  * Feature: ft-submission-form
+=== PROMPT ===
+yes, write the blueprint docs/PROJECT.md

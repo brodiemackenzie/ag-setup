@@ -17,29 +17,35 @@ You must act as the **sdd-architect** to compile specifications, designs, and ta
 
 ## 3. Phase A: Functional Specification (SPEC.md)
 1.  **Interview**: Conduct a targeted conversational interview strictly focused on the functional scope, user personas, input validations, and user journey paths.
-2.  **Draft Artifact**: Compile the requirements into a new Antigravity Artifact named **`sdd_spec_draft`** (set `IsArtifact` to true, and use type `other`). Ensure requirements use `req-` prefixes and contain no code blocks.
-3.  **HITL Review**: Instruct the user: *"I have generated the Functional Specification draft. Please review the 'sdd_spec_draft' artifact tab. Please add comments on the artifact tab to request changes, or reply 'SPEC is approved' to proceed."*
-4.  **Iteration**: If the user leaves comments or requests edits, surgically edit the `sdd_spec_draft` artifact. Do not proceed until you receive SPEC approval.
+2.  **Draft Artifact**: Compile the requirements into a new Antigravity Artifact named **`SPEC.md`** (set `IsArtifact` to true, and use type `other`). Ensure the file starts with the metadata block (`Type: Functional Specification`, `Status: DRAFT`, etc.) and that requirements use `req-` prefixes.
+3.  **HITL Review**: Instruct the user: *"I have generated the Functional Specification draft. Please review the 'SPEC.md' artifact tab. Please click 'Proceed' to approve, or add comments to request changes."*
+4.  **Iteration**: If the user leaves comments or requests edits, surgically edit the `SPEC.md` artifact. Do not proceed until you receive SPEC approval.
 
 ## 4. Phase B: Technical Design (DESIGN.md)
 1.  **Interview**: Conduct a targeted conversational interview focused on the technical design: database schemas, API payload structures (endpoints, parameters), Sequence diagrams, and mock test constraints.
-2.  **Draft Artifact**: Compile the design into a new Antigravity Artifact named **`sdd_design_draft`** (set `IsArtifact` to true). Include database entity shapes and endpoint contracts.
-3.  **HITL Review**: Instruct the user: *"I have generated the Technical Design draft. Please review the 'sdd_design_draft' artifact tab. Please add comments on the artifact tab to request changes, or reply 'DESIGN is approved' to proceed."*
-4.  **Iteration**: Surgically edit `sdd_design_draft` based on comments. Do not proceed until you receive DESIGN approval.
+2.  **Draft Artifact**: Compile the design into a new Antigravity Artifact named **`DESIGN.md`** (set `IsArtifact` to true). Ensure the file starts with the metadata block (`Type: Technical Design`, `Status: DRAFT`, etc.) and includes database schemas and endpoints.
+3.  **HITL Review**: Instruct the user: *"I have generated the Technical Design draft. Please review the 'DESIGN.md' artifact tab. Please click 'Proceed' to approve, or add comments to request changes."*
+4.  **Iteration**: Surgically edit `DESIGN.md` based on comments. Do not proceed until you receive DESIGN approval.
 
 ## 5. Phase C: Actionable Tasks Checklist (TASKS.md)
 1.  **Draft Check**: Map the approved specifications and design contracts into a sequential, actionable BDD task checklist.
-2.  **Draft Artifact**: Compile the tasks list into a new Antigravity Artifact named **`sdd_tasks_draft`** (set `IsArtifact` to true).
+2.  **Draft Artifact**: Compile the tasks list into a new Antigravity Artifact named **`TASKS.md`** (set `IsArtifact` to true). Ensure the file starts with the metadata block (`Type: Task Checklist`, `Status: DRAFT`, etc.).
     *   Ensure tasks are capped at **up to 12 tasks**.
     *   Ensure each task defines explicit Gherkin `Given/When/Then` scenarios.
-3.  **HITL Review**: Instruct the user: *"I have generated the Task Checklist draft. Please review the 'sdd_tasks_draft' artifact tab. Please add comments on the artifact tab to request changes, or reply 'TASKS is approved' to proceed."*
-4.  **Iteration**: Edit `sdd_tasks_draft` based on comments. Do not proceed until you receive TASKS approval.
+3.  **HITL Review**: Instruct the user: *"I have generated the Task Checklist draft. Please review the 'TASKS.md' artifact tab. Please click 'Proceed' to approve, or add comments to request changes."*
+4.  **Iteration**: Edit `TASKS.md` based on comments. Do not proceed until you receive TASKS approval.
 
 ## 6. Phase D: Commit and Write to Workspace
 Once all three drafts are approved:
-1.  Copy the finalized contents from the three artifacts and write them to their permanent workspace files inside the feature capsule:
-    *   `docs/sdd/ep-<epic>/ft-<feature>/SPEC.md`
-    *   `docs/sdd/ep-<epic>/ft-<feature>/DESIGN.md`
-    *   `docs/sdd/ep-<epic>/ft-<feature>/TASKS.md`
-2.  Clean up the temporary draft artifacts.
+1.  For each approved artifact (`SPEC.md`, `DESIGN.md`, `TASKS.md`):
+    *   Read the content.
+    *   Surgically update the metadata block:
+        *   Set `Status` to `APPROVED`.
+        *   Set `Approved By` to the user's LDAP (e.g., `brodiem`).
+        *   Set `Date` to the current date (e.g., `2026-06-16`).
+    *   Write the updated content to its permanent workspace file:
+        *   `docs/sdd/ep-<epic>/ft-<feature>/SPEC.md`
+        *   `docs/sdd/ep-<epic>/ft-<feature>/DESIGN.md`
+        *   `docs/sdd/ep-<epic>/ft-<feature>/TASKS.md`
+2.  Clean up the temporary draft artifacts in the brain directory.
 3.  Report completion: *"Specification, Design, and Tasks have been compiled and saved to disk. You are now ready to open a sandbox using /start-feature."*

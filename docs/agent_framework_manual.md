@@ -81,7 +81,7 @@ To allow coding agents to run compilers, build suites, and modify files safely i
 
 * **Confinement**: A subagent spawned to work on a feature operates *strictly* within the subfolder `/worktrees/<epic>/<feature>/`.
 * **Path Locks**: Path parameters are resolved relative to the worktree root. Any tool call targeting paths outside the sandbox is instantly blocked by the permission manager as a boundary violation.
-* **Dependency Symlinks**: Local project setups (via `manage_worktree.sh link-env`) dynamically symlink heavy dependencies (like `node_modules` or python virtualenvs) from the parent root to the worktree, keeping disk usage light while maintaining strict environment parity.
+* **Hermetic Environments**: The Coder agent is responsible for initializing its own local runtime dependencies (e.g. creating virtualenvs and installing packages) inside the worktree jail during the first scaffolding task. Pre-provisioning or symlinking dependencies is avoided to maintain strict isolation.
 
 ---
 

@@ -20,6 +20,15 @@ The resulting draft must be compiled into a new Antigravity Artifact named **`sd
 *(Note: Do NOT write this file directly to the workspace docs directory until the draft is fully reviewed and approved by the user).*
 
 ```markdown
+---
+Type: Technical Design
+Status: DRAFT
+Approved By: None
+Date: None
+Epic: ep-<epic-slug>
+Feature: ft-<feature-slug>
+---
+
 # Technical Design: [Feature Title in Title Case]
 
 ## 1. Data Models & Schemas

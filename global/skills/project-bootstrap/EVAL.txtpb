@@ -1,0 +1,15 @@
+# proto-file: learning/gemini/agents/evaluation/evalin/proto/eval_suite.proto
+# proto-message: EvalSuite
+
+suite_name: "SDD Bootstrap Eval"
+timeout_seconds: 300
+
+cases {
+  name: "bootstrap_greenfield"
+  prompt: "/bootstrap ./sandbox/eval-test-bootstrap --git-remote none --process sdd-anchored"
+  
+  expectations: "The agent bootstrapped a new project named './sandbox/eval-test-bootstrap'."
+  expectations: "The agent executed the bootstrap.sh script with correct arguments."
+  
+  script_validators: "bash global/skills/project-bootstrap/validate_bootstrap.sh"
+}

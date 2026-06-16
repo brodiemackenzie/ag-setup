@@ -24,7 +24,7 @@ graph TD
         B -->|Spawns| IMPL[sdd-implementor agent]
         
         PM -->|Executes manage_worktree.sh| WT[(Feature Git Worktrees)]
-        WT -->|Symlinks node_modules / python env| B
+        WT -.->|Reads Parent Specs (Read-Only)| B
     end
     
     subgraph Development [Development Layer (~/projects/ag-setup/)]
@@ -188,9 +188,7 @@ The worktree manager governs the sandboxed lifecycle of individual epic/feature 
    * Creates a new Git branch `feature/<epic_slug>/<feature_slug>`.
    * Provisions an isolated Git worktree directory under `worktrees/<epic_slug>/<feature_slug>/`.
    * Automatically scaffolds empty, GFM-compliant spec blueprints inside the worktree's feature folder: `docs/sdd/<epic_slug>/<feature_slug>/SPEC.md`, `DESIGN.md`, and `TASKS.md`.
-2. **`link-env`**:
-   * Detects local technology stacks and binds local environments: dynamic symlinking of root parent `node_modules`, inherited system virtualenvs (`python3 -m venv --system-site-packages`), or shared Rust cargo target caches.
-3. **`close-feature`**:
+2. **`close-feature`**:
    * Verifies tests, prunes, and deletes the Git worktree folder from the filesystem (`git worktree remove --force`).
    * Cleans up the Git branch mapping index cleanly.
 

@@ -66,5 +66,5 @@ You must strictly adhere to these core planning controls when executing design o
 * **Phase-Specific Guidance**: Below the Status Report, suggest the next recommended action based on the discovered state:
   1. **Greenfield**: If `docs/PROJECT.md` is missing, instruct the user to run `/blueprint` to begin.
   2. **Specification**: If `docs/PROJECT.md` exists but no feature specs are started, suggest running `/spec-feature` to design a new feature.
-  3. **Provisioning**: If complete specs exist for a feature, but you are in the parent repository, suggest running `/start-feature` to provision the Feature Workspace.
-  4. **Implementation**: If you are running inside a Feature Workspace (path contains `worktrees/`), verify the workspace health (branch and runtime environment) and suggest reviewing the first task in `TASKS.md` to start the TDD loop.
+  3. **Provisioning**: If complete specs exist for a feature, but you are in the parent repository, suggest running `/open-feature` to provision the Feature Workspace.
+  4. **Implementation**: If you are running inside a Feature Workspace (path contains `worktrees/`), verify the workspace health (branch and runtime environment) and suggest running `/start-feature` to begin the implementation phase.

@@ -70,37 +70,56 @@ case "$SUBCOMMAND" in
     log "Worktree provisioning complete! Workspace ready for implementation."
 
     # Register Workspace in Parent Project in Jetski Hub
-    log "Registering workspace in parent project config..."
+    log "Registering worktree as a new isolated Project in Jetski Hub..."
     python3 -c "
-import os, json, glob
+import os, json, uuid
 parent_root = '$PARENT_ROOT'
 worktree_path = '$WORKTREE_PATH'
+branch_name = '$BRANCH_NAME'
 projects_dir = os.path.expanduser('~/.gemini/config/projects')
-parent_uri = f'file://{parent_root}'
 worktree_uri = f'file://{worktree_path}'
 
-found = False
-for path in glob.glob(os.path.join(projects_dir, '*.json')):
-    try:
-        with open(path, 'r+') as f:
-            data = json.load(f)
-            resources = data.get('projectResources', {}).get('resources', [])
-            has_parent = any(r.get('folderUri') == parent_uri for r in resources)
-            if has_parent:
-                if not any(r.get('folderUri') == worktree_uri for r in resources):
-                    resources.append({'folderUri': worktree_uri})
-                    data['projectResources']['resources'] = resources
-                    f.seek(0)
-                    json.dump(data, f, indent=2)
-                    f.truncate()
-                    print(f'Added workspace to project config: {path}')
-                found = True
-                break
-    except Exception as e:
-        print(f'Error processing {path}: {e}')
+new_uuid = str(uuid.uuid4())
+parent_name = os.path.basename(parent_root)
 
-if not found:
-    print(f'Warning: No project config found containing parent root: {parent_root}')
+new_project = {
+    \"id\": new_uuid,
+    \"name\": f\"{parent_name} ({branch_name})\",
+    \"projectResources\": {
+        \"resources\": [
+            {
+                \"gitFolder\": {
+                    \"folderUri\": worktree_uri,
+                    \"defaultBranch\": branch_name
+                }
+            }
+        ]
+    },
+    \"permissionGrants\": {
+        \"permissionGrants\": {
+            \"allow\": [
+                \"command(git)\"
+            ],
+            \"deny\": [
+                f\"write_file({worktree_path}/.agents)\"
+            ]
+        }
+    },
+    \"settings\": {
+        \"fileAccessPolicy\": \"AGENT_SETTING_POLICY_ASK\",
+        \"internetPolicy\": \"AGENT_SETTING_POLICY_ASK\",
+        \"autoExecutionPolicy\": \"CASCADE_COMMANDS_AUTO_EXECUTION_OFF\",
+        \"artifactReviewMode\": \"ARTIFACT_REVIEW_MODE_ALWAYS\"
+    }
+}
+
+new_config_path = os.path.join(projects_dir, f\"{new_uuid}.json\")
+try:
+    with open(new_config_path, 'w') as f:
+        json.dump(new_project, f, indent=2)
+    print(f'Created new project config: {new_config_path}')
+except Exception as e:
+    print(f'Error creating project config: {e}')
 "
     ;;
 
@@ -119,29 +138,27 @@ if not found:
     fi
 
     # Remove Workspace from Parent Project in Jetski Hub
-    log "Removing workspace from parent project config..."
+    log "Deleting isolated project config from Jetski Hub..."
     python3 -c "
 import os, json, glob
-parent_root = '$PARENT_ROOT'
 worktree_path = '$WORKTREE_PATH'
 projects_dir = os.path.expanduser('~/.gemini/config/projects')
-parent_uri = f'file://{parent_root}'
 worktree_uri = f'file://{worktree_path}'
 
+deleted = False
 for path in glob.glob(os.path.join(projects_dir, '*.json')):
     try:
-        with open(path, 'r+') as f:
+        with open(path, 'r') as f:
             data = json.load(f)
             resources = data.get('projectResources', {}).get('resources', [])
-            has_parent = any(r.get('folderUri') == parent_uri for r in resources)
-            if has_parent:
-                new_resources = [r for r in resources if r.get('folderUri') != worktree_uri]
-                if len(new_resources) < len(resources):
-                    data['projectResources']['resources'] = new_resources
-                    f.seek(0)
-                    json.dump(data, f, indent=2)
-                    f.truncate()
-                    print(f'Removed workspace from project config: {path}')
+            for r in resources:
+                uri = r.get('folderUri') or r.get('gitFolder', {}).get('folderUri')
+                if uri == worktree_uri:
+                    print(f'Deleting project config: {path}')
+                    os.remove(path)
+                    deleted = True
+                    break
+            if deleted:
                 break
     except Exception as e:
          print(f'Error processing {path}: {e}')

@@ -85,7 +85,28 @@ To allow coding agents to run compilers, build suites, and modify files safely i
 
 ---
 
-## 🎙️ 4. Async Multi-Agent Orchestration & Communication
+## 🛡️ 4. Project Configuration & Permissions (Jetski Hub)
+
+In Jetski Hub (Web UI), local development environments operate in a **1:1 Project-to-Workspace mapping**. Each project is configured via a JSON file under `~/.gemini/config/projects/<UUID>.json`.
+
+### A. Resource Confinement
+Projects define their directories using the `projectResources.resources` array.
+*   **`folderUri`**: A flat file system directory resource.
+*   **`gitFolder`**: Wraps the folder path and defines Git metadata:
+    *   `folderUri`: The absolute path of the repository/worktree.
+    *   `defaultBranch`: The default Git branch for the workspace session.
+
+### B. Remote Write Access (`allowWrite`)
+Inside the `gitFolder` resource config, `allowWrite` is a boolean toggle governing remote repository actions:
+*   **`allowWrite: true`**: Grants the agent permission to push commits to the remote Git origin (e.g. `git push`). *Required for parent repository PM agents.*
+*   **`allowWrite: false` (or omitted)**: Treats the Git remote as read-only. The agent can read and fetch remote branches, and make local commits, but cannot push to GitHub. *Recommended for sandboxed Coder agents.*
+
+### C. Permission Grants
+Enforced at the platform level (in the project config's `permissionGrants.allow` list). If a tool/command prefix is not explicitly allowed, the platform falls back to the `fileAccessPolicy` or `internetPolicy` (which default to `ASK` for safety, prompting the user).
+
+---
+
+## 🎙️ 5. Async Multi-Agent Orchestration & Communication
 
 When coordinating complex workflows (like SDD), JetSki relies on a parent-to-child async messaging lifecycle:
 
@@ -106,7 +127,7 @@ When coordinating complex workflows (like SDD), JetSki relies on a parent-to-chi
 
 ---
 
-## 💡 5. Core Best Practices for Developers
+## 💡 6. Core Best Practices for Developers
 * **Always version-control playbooks**: Keep your `.agents/skills/` checked in. It guarantees that your AI team moves in sync with your codebase changes.
 * **Plan-First Hook is King**: Never let an agent edit files without generating an Implementation Plan or Task Checklist asset first. This allows you to correct direction and maintain control *before* any code is modified.
 * **Confine coder agents**: Keep your `sdd-implementor` restricted to the worktree sandbox, and only let the `sdd-project-manager` handle main repository mergers.

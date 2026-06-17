@@ -67,4 +67,9 @@ You must strictly adhere to these core planning controls when executing design o
   1. **Greenfield**: If `docs/PROJECT.md` is missing, instruct the user to run `/blueprint` to begin.
   2. **Specification**: If `docs/PROJECT.md` exists but no feature specs are started, suggest running `/spec-feature` to design a new feature.
   3. **Provisioning**: If complete specs exist for a feature, but you are in the parent repository, suggest running `/open-feature` to provision the Feature Workspace.
-  4. **Implementation**: If you are running inside a Feature Workspace (path contains `worktrees/`), verify the workspace health (branch and runtime environment) and suggest running `/start-feature` to begin the implementation phase.
+  4. **Implementation**: If you are running inside a Feature Workspace (path contains `worktrees/`), verify the workspace health (branch and runtime environment):
+     *   Locate and read the task checklist (`docs/sdd/ep-<epic>/ft-<feature>/TASKS.md`).
+     *   If there are still unchecked tasks (`- [ ]`):
+         *   Suggest running `/start-feature` to continue implementing the next task.
+     *   If all tasks are checked (`- [x]`):
+         *   Suggest: *"All tasks are complete! Switch back to the parent project in Jetski Hub and run **/close-feature** to merge and clean up."*

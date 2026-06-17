@@ -136,6 +136,16 @@ cat <<EOF > "$CONFIG_FILE"
         }
       }
     ]
+  },
+  "permissionGrants": {
+    "permissionGrants": {
+      "deny": [
+        "write_file($PROJECT_DIR/.agents/skills)",
+        "write_file($PROJECT_DIR/.agents/workflows)",
+        "write_file($PROJECT_DIR/.agents/rules)",
+        "write_file($PROJECT_DIR/.agents/agents)"
+      ]
+    }
   }
 }
 EOF

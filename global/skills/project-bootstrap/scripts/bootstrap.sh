@@ -111,7 +111,7 @@ fi
 log "Creating project folder at $PROJECT_DIR..."
 mkdir -p "$PROJECT_DIR"
 
-# 3. Register Project in Jetski Hub
+# 3. Provision UUID for Project Registration
 PROJECTS_DIR="$HOME/.gemini/config/projects"
 mkdir -p "$PROJECTS_DIR"
 
@@ -120,35 +120,6 @@ if command -v uuidgen >/dev/null 2>&1; then
 else
   UUID=$(cat /proc/sys/kernel/random/uuid)
 fi
-
-CONFIG_FILE="$PROJECTS_DIR/$UUID.json"
-log "Registering project in Jetski Hub ($CONFIG_FILE)..."
-cat <<EOF > "$CONFIG_FILE"
-{
-  "id": "$UUID",
-  "name": "$PROJECT_NAME",
-  "projectResources": {
-    "resources": [
-      {
-        "gitFolder": {
-          "folderUri": "file://$PROJECT_DIR",
-          "allowWrite": true
-        }
-      }
-    ]
-  },
-  "permissionGrants": {
-    "permissionGrants": {
-      "deny": [
-        "write_file($PROJECT_DIR/.agents/skills)",
-        "write_file($PROJECT_DIR/.agents/workflows)",
-        "write_file($PROJECT_DIR/.agents/rules)",
-        "write_file($PROJECT_DIR/.agents/agents)"
-      ]
-    }
-  }
-}
-EOF
 
 # 4. Setup Git
 cd "$PROJECT_DIR"
@@ -173,13 +144,70 @@ if [ "$IS_TEST_TEMPLATE" = true ]; then
   
   log "Copying tests/ to $PROJECT_DIR/tests/..."
   rsync -av --exclude='.git' --exclude='sandbox' "$FRAMEWORK_ROOT/tests/" "tests/"
-  
-  log "Copying test_sdd_process.sh to $PROJECT_DIR/test_sdd_process.sh..."
-  cp "$FRAMEWORK_ROOT/test_sdd_process.sh" "test_sdd_process.sh"
-  chmod +x test_sdd_process.sh
 fi
 
-# 7. Setup GitIgnore additions
+# 7. Register Project in Jetski Hub with precise permission rules
+CONFIG_FILE="$PROJECTS_DIR/$UUID.json"
+log "Registering project in Jetski Hub ($CONFIG_FILE)..."
+python3 -c "
+import os, json
+
+project_dir = '$PROJECT_DIR'
+project_name = '$PROJECT_NAME'
+config_file = '$CONFIG_FILE'
+uuid_str = '$UUID'
+
+deny_paths = []
+agents_dir = os.path.join(project_dir, '.agents')
+
+# Deny individual rules, workflows, and profiles (allowing users to create new ones)
+for folder in ['agents', 'rules', 'workflows']:
+    folder_path = os.path.join(agents_dir, folder)
+    if os.path.exists(folder_path):
+        for f in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, f)
+            if os.path.isfile(file_path):
+                deny_paths.append(f'write_file({file_path})')
+
+# Deny specific copied skill directories
+skills_path = os.path.join(agents_dir, 'skills')
+if os.path.exists(skills_path):
+    for d in os.listdir(skills_path):
+        dir_path = os.path.join(skills_path, d)
+        if os.path.isdir(dir_path):
+            deny_paths.append(f'write_file({dir_path})')
+
+config = {
+  'id': uuid_str,
+  'name': project_name,
+  'projectResources': {
+    'resources': [
+      {
+        'gitFolder': {
+          'folderUri': f'file://{project_dir}',
+          'allowWrite': True
+        }
+      }
+    ]
+  },
+  'permissionGrants': {
+    'permissionGrants': {
+      'allow': [
+        'command(git)'
+      ],
+      'deny': deny_paths
+    }
+  }
+}
+
+try:
+    with open(config_file, 'w') as f:
+        json.dump(config, f, indent=2)
+except Exception as e:
+    print(f'Error writing project config: {e}')
+"
+
+# 8. Setup GitIgnore additions
 log "Updating .gitignore to exclude local agent telemetry and worktree files..."
 cat << 'EOF' >> .gitignore
 

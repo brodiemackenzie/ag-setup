@@ -107,7 +107,13 @@ To install these templates globally so you can use the bootstrapper CLI to initi
    ```
    *This guarantees that any improvements or modifications you make locally inside your version-controlled `ag-setup` workspace (such as workspace template modifications, rules, or new slash commands) are instantly active globally on your machine without manual copy-pasting. Note that you should NOT pre-create the target folders 'workspace', 'global_workflows', or 'rules' inside '~/.gemini/config/' as the symlink creation will establish them automatically.*
 
-3. **Authorize Global Read-Only Workspace Access**:
+3. **Import Custom Plugins**:
+   Import the `project-orchestration` plugin to register the `/project-create` slash command:
+   ```bash
+   jetski plugins import ~/projects/ag-setup/plugins/project-orchestration/ --force
+   ```
+4. **Authorize Global Read-Only Workspace Access**:
+
    Since process templates, modular rules, and playbooks are symlinked directly from your version-controlled `ag-setup` repository, you **MUST** grant all active agents permission to read this folder. Run this safe one-liner to configure it without exposing write permissions:
    ```bash
    python3 -c "
@@ -149,30 +155,39 @@ When chatting with the AI agent inside the workspace, you can use conversational
 
 ## 🛠️ Tooling & Command Manual
 
-### 1. The Project Bootstrapper (`bootstrap.sh` / `/bootstrap`)
-The bootstrapper CLI and conversational workflow automate greenfield directory creation under `~/projects/`, clean framework git files, bind target origin remotes, and safely rsync process templates without duplicate git history metadata.
+### 1. The Project Creator (`/project-create`)
+The `/project-create` slash command creates a new project directory under `~/projects/` (or at a specified absolute path), initializes Git, and registers the project in Jetski Hub.
 
-#### 🎙️ Option A: Interactive `/bootstrap` (Recommended)
-If you are in a chat session with Jetski/Antigravity, simply type:
+#### 🎙️ Usage in Chat
+Simply type the command with the project name:
 ```
-/bootstrap
+/project-create my-new-project
 ```
-The agent will take the lead and conversationally collect the required inputs (Project Name, GitHub Remote SSH URL, and process template choosing) **one at a time** in chat, and execute the installer automatically on your behalf. No terminal commands to remember!
+Or specify an absolute path:
+```
+/project-create my-new-project /usr/local/google/home/brodiem/projects/my-custom-path
+```
+
+---
+
+### 2. The Legacy Project Bootstrapper (`bootstrap.sh` / `/bootstrap`) [DEPRECATED]
+*Note: This command is kept for reference. Use `/project-create` instead.*
+
+The legacy bootstrapper CLI and conversational workflow automate greenfield directory creation, remote origin binding, and template copying.
+
+#### 🎙️ Option A: Interactive `/bootstrap`
+Type `/bootstrap` in chat to conversationally initialize a project with full template scaffolding.
 
 #### 💻 Option B: CLI Command Script
-Run the script manually in your terminal:
+Run manually:
 * **Location**: `global/skills/project-bootstrap/scripts/bootstrap.sh`
 * **Usage**:
   ```bash
   ./global/skills/project-bootstrap/scripts/bootstrap.sh <project_name> <github_repo_url> [--process <process_slug>]
   ```
-* **Arguments**:
-  * `<project_name>`: The directory name under `~/projects/` (or a relative path like `./sandbox/my-app` if initializing a test sandbox).
-  * `<github_repo_url>`: The GitHub URL to bind as `origin`.
-* **Options**:
-  * `--process`: The template slug inside `~/.gemini/config/workspace/templates/` (defaults to `sdd-anchored`).
 
 ---
+
 
 ### 2. The Git Worktree Lifecycle Manager (`manage_worktree.sh`)
 The worktree manager governs the sandboxed lifecycle of individual epic/feature branches, dynamic library bindings, and safe post-testing branch closures.

@@ -1,0 +1,18 @@
+description = "Create a new project directory, initialize Git, and register in Jetski Hub"
+prompt = """
+You are acting as the project-create handler.
+Your task is to create a new project directory, initialize git, and register it.
+
+1. **Extract the target project name and optional path** from the user's request: "{{.Message}}".
+   - Identify the project name (e.g., "my-project" or "foo/bar").
+   - Check if the user specified an absolute path.
+   - If no project name is provided, ask the user to provide it and stop.
+2. **Execute the creation script**:
+   - Run the Bash script located at `~/.gemini/config/plugins/project-orchestration/scripts/create_project.sh`.
+   - Pass the project name as the first argument.
+   - If an absolute path was specified, pass it as the second argument.
+   - Example command: `bash ~/.gemini/config/plugins/project-orchestration/scripts/create_project.sh <project_name> [<absolute_path>]`
+3. **Report results**:
+   - If the script succeeds, confirm to the user that the project was created and registered.
+   - If the script fails, report the error output to the user.
+"""

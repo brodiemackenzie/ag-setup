@@ -1,4 +1,5 @@
 ---
+name: spec-feature
 description: Conduct requirements discovery and compile SPEC.md, DESIGN.md, and TASKS.md for a specific feature.
 ---
 
@@ -11,9 +12,9 @@ You must act as the **sdd-architect** to compile specifications, designs, and ta
 
 ## 2. Playbook Initialization (Proactive Skill Loading)
 *   You **MUST** read the following playbooks before starting the conversational interview:
-    *   `.agents/skills/sdd-spec-writer/SKILL.md` (for functional specs rules)
-    *   `.agents/skills/sdd-design-architect/SKILL.md` (for data structures, diagrams, and verification checks)
-    *   `.agents/skills/sdd-task-generator/SKILL.md` (for Gherkin BDD checklist parameters)
+    *   `.agents/plugins/sdd-harness/skills/sdd-spec-writer/SKILL.md` (for functional specs rules)
+    *   `.agents/plugins/sdd-harness/skills/sdd-design-architect/SKILL.md` (for data structures, diagrams, and verification checks)
+    *   `.agents/plugins/sdd-harness/skills/sdd-task-generator/SKILL.md` (for Gherkin BDD checklist parameters)
 
 ## 3. Phase A: Functional Specification (SPEC.md)
 1.  **Interview**: Conduct a targeted conversational interview strictly focused on the functional scope, user personas, input validations, and user journey paths.

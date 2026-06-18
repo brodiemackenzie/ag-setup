@@ -15,7 +15,7 @@ In standard Spec-Driven Development, every feature is developed in complete isol
 ### 1. Provisioning a Feature Workspace (`prototype`)
 To begin developing a new feature, the Project Manager agent or user runs the `prototype` command to create a sandboxed feature capsule:
 ```bash
-.agents/skills/worktree-manager/scripts/manage_worktree.sh prototype <epic_slug> <feature_slug>
+.agents/plugins/sdd-harness/skills/worktree-manager/scripts/manage_worktree.sh prototype <epic_slug> <feature_slug>
 ```
 **Actions Performed**:
 * Creates a new Git branch: `feature/<epic_slug>/<feature_slug>`.
@@ -30,7 +30,7 @@ To begin developing a new feature, the Project Manager agent or user runs the `p
 ### 3. Merging & Deleting a Feature Capsule (`close-feature`)
 Once verification tests are passing, safely close and dismantle the worktree:
 ```bash
-.agents/skills/worktree-manager/scripts/manage_worktree.sh close-feature <epic_slug> <feature_slug>
+.agents/plugins/sdd-harness/skills/worktree-manager/scripts/manage_worktree.sh close-feature <epic_slug> <feature_slug>
 ```
 **Actions Performed**:
 * Standardizes git status checks inside the worktree.

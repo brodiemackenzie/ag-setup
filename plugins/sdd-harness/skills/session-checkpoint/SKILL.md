@@ -18,7 +18,7 @@ An agent must automatically serialize its active state and halt when:
 * **Failure Loop Trigger**: A compiler, test runner, or linter error persists across **3 sequential code modification attempts**.
 
 ### 2. Checkpoint File Location
-* **File Location**: `.agents/history/checkpoint.md` inside the active workspace directory (this file is explicitly ignored in Git).
+* **File Location**: `.agents/plugins/sdd-harness/history/checkpoint.md` inside the active workspace directory (this file is explicitly ignored in Git).
 
 ---
 
@@ -63,7 +63,7 @@ To resume execution in a fresh, clean conversation window:
 1. The user starts a new chat session.
 2. The user inputs: `@/context Resume from checkpoint.`
 3. **The Agent's Recovery Steps**:
-   * Parse and read `.agents/history/checkpoint.md`.
+   * Parse and read `.agents/plugins/sdd-harness/history/checkpoint.md`.
    * Read the active `SPEC.md`, `DESIGN.md`, and `TASKS.md` files in the feature worktree capsule.
    * Read the `docs/lessons_learned.md` to align with historical recommendations.
    * Automatically resume execution at the exact point listed under **Next Steps** in the checkpoint.

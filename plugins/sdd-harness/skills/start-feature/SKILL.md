@@ -1,4 +1,5 @@
 ---
+name: start-feature
 description: Initialize the implementation phase inside the sandboxed workspace, load TDD playbooks, and identify the first task.
 ---
 
@@ -15,7 +16,7 @@ You must act strictly as the **sdd-implementor** (profile `agents/sdd-implemento
 
 ## 2. Playbook Initialization
 *   Proactively load the TDD playbook:
-    *   Read `.agents/skills/tdd-flow/SKILL.md` to align with TDD controls and retry limits.
+    *   Read `.agents/plugins/sdd-harness/skills/tdd-flow/SKILL.md` to align with TDD controls and retry limits.
 
 ## 3. Task Identification
 1.  Open `docs/sdd/ep-<epic>/ft-<feature>/TASKS.md`.

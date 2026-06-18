@@ -1,4 +1,5 @@
 ---
+name: open-feature
 description: Commit specification files, provision a sandboxed branch worktree, and instruct the user to open the workspace.
 ---
 
@@ -16,9 +17,9 @@ You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager
 *   Run `git add .` and `git commit -m "commit specs for ep-<epic> ft-<feature>"` to ensure the parent workspace is clean.
 
 ## 3. Execute Sandbox Provisioning
-1.  Run the worktree manager shell script to provision the sandbox branch and register it as a new Project in Jetski Hub:
-    ```bash
-    ./.agents/skills/worktree-manager/scripts/manage_worktree.sh prototype ep-<epic> ft-<feature>
+1.  Run the `/worktree create` slash command to provision the sandbox branch and register it as a new Project in Jetski Hub:
+    ```
+    /worktree create ep-<epic>-ft-<feature>
     ```
 2.  Direct the user:
     *   *"The sandbox has been successfully provisioned and registered as a new Project in Jetski Hub!"*

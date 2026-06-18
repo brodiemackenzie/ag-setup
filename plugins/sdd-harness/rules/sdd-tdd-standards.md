@@ -27,7 +27,7 @@ All test suites must be fully hermetic:
 ## 4. TDD Loop Escape & Process Boundaries
 To prevent infinite token burn and maintain specification alignment, you must adhere to these loop escape limits:
 *   **Max TDD Retries**: You are allowed a maximum of **3 consecutive retries** to fix code for a single task after a test failure.
-*   **Strict Process Boundaries (No Cheating)**: The TDD execution loop and retry limits apply strictly to editing **project application code** and **local test suites** to satisfy specs. You are **strictly prohibited** from altering specifications (`SPEC.md` / `DESIGN.md` / `TASKS.md`), rules (`.agents/rules/`), or playbooks (`.agents/skills/`) to force tests to pass. Any specification discrepancies must trigger immediate escalation to the user.
+*   **Strict Process Boundaries (No Cheating)**: The TDD execution loop and retry limits apply strictly to editing **project application code** and **local test suites** to satisfy specs. You are **strictly prohibited** from altering specifications (`SPEC.md` / `DESIGN.md` / `TASKS.md`), rules (`.agents/plugins/sdd-harness/rules/`), or playbooks (`.agents/plugins/sdd-harness/skills/`) to force tests to pass. Any specification discrepancies must trigger immediate escalation to the user.
 *   **Halt & Escalate**: If the test suite fails on the 3rd attempt:
     1.  Halt the TDD loop immediately.
     2.  Write a summary file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` detailing:

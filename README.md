@@ -189,8 +189,47 @@ Run manually:
 ---
 
 
-### 2. The Git Worktree Lifecycle Manager (`manage_worktree.sh`)
-The worktree manager governs the sandboxed lifecycle of individual epic/feature branches, dynamic library bindings, and safe post-testing branch closures.
+### 2. The Git Worktree Manager (`/worktree`)
+The `/worktree` slash command manages isolated Git worktrees for feature branches and registers them automatically in Jetski Hub to enforce path isolation.
+
+#### 🎙️ Usage in Chat
+*   **List all active sandboxes**:
+    ```
+    /worktree list
+    ```
+*   **Create a worktree**:
+    ```
+    /worktree create my-feature-branch
+    ```
+*   **Show changes in the worktree**:
+    ```
+    /worktree diff my-feature-branch
+    ```
+*   **Sync worktree branch with parent branch** (merge main into feature):
+    ```
+    /worktree sync my-feature-branch
+    ```
+*   **Merge feature branch into parent** (merge feature into main):
+    ```
+    /worktree merge my-feature-branch
+    ```
+*   **Close and clean up (Safely)**:
+    ```
+    /worktree close my-feature-branch
+    ```
+*   **Force close discarding changes**:
+    ```
+    /worktree close my-feature-branch --force
+    ```
+*   **Combined Close-out (Sync, Diff, Merge, Close)**:
+    ```
+    /worktree finish my-feature-branch
+    ```
+
+---
+
+### 3. Legacy SDD-Specific Worktree Script (`manage_worktree.sh`)
+*Note: This script is part of the process templates and is copied locally to features. For general-purpose worktree management, use `/worktree`.*
 
 * **Location**: `.agents/skills/worktree-manager/scripts/manage_worktree.sh`
 * **Usage**:
@@ -199,17 +238,13 @@ The worktree manager governs the sandboxed lifecycle of individual epic/feature 
   ```
 
 #### Subcommands:
-1. **`prototype`**:
-   * Creates a new Git branch `feature/<epic_slug>/<feature_slug>`.
-   * Provisions an isolated Git worktree directory under `worktrees/<epic_slug>/<feature_slug>/`.
-   * Automatically scaffolds empty, GFM-compliant spec blueprints inside the worktree's feature folder: `docs/sdd/<epic_slug>/<feature_slug>/SPEC.md`, `DESIGN.md`, and `TASKS.md`.
-2. **`close-feature`**:
-   * Verifies tests, prunes, and deletes the Git worktree folder from the filesystem (`git worktree remove --force`).
-   * Cleans up the Git branch mapping index cleanly.
+1. **`prototype`**: Creates branch, worktree directory, and scaffolds empty SDD specs.
+2. **`close-feature`**: Dismantles directory and branch mappings.
 
 ---
 
-### 3. The Docs Wiki Compiler (`compile_wiki.py`)
+
+### 4. The Docs Wiki Compiler (`compile_wiki.py`)
 The compiler recursively scans all markdown documents (specifications, ADRs, retrospectives) inside your workspace, translates Markdown markup into HTML, extracts Mermaid fenced blocks, computes relative depth prefix offsets, and generates a browseable static HTML portal.
 
 * **Location**: `.agents/skills/docs-compiler/scripts/compile_wiki.py`

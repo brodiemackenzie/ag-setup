@@ -77,7 +77,7 @@ If a test fails during Phase 2 (GREEN), you must track your consecutive failed a
 
 1.  **Maintain a Retry Counter**: Keep a local counter of consecutive failed compilation/test runs for the active task.
 2.  **Max Retries (3 Attempts)**: You are allowed up to 3 consecutive refactoring runs to get the tests to pass.
-3.  **No Process Alterations**: You are strictly prohibited from modifying specifications (`SPEC.md` / `DESIGN.md`), rules (`.agents/rules/`), or playbooks (`.agents/skills/`) to force tests to pass. Only the project code or local mock test scripts may be edited.
+3.  **No Process Alterations**: You are strictly prohibited from modifying specifications (`SPEC.md` / `DESIGN.md`), rules (`.agents/plugins/sdd-harness/rules/`), or playbooks (`.agents/plugins/sdd-harness/skills/`) to force tests to pass. Only the project code or local mock test scripts may be edited.
 4.  **Escalation Protocol (On 3rd Failure)**:
     *   Halt the TDD loop immediately.
     *   Create a file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` using the template below:

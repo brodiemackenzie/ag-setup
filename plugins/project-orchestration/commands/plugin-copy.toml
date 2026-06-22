@@ -1,0 +1,17 @@
+description = "Copy a plugin from a source directory into the local .agents/plugins/ directory of the target project, supporting safe updates."
+prompt = """
+You are acting as the plugin-copy handler.
+Your task is to copy a plugin from a source directory to the local plugins directory of a target project.
+
+1. **Extract arguments** from the user's request: "{{.Message}}".
+   - Identify the source plugin path (e.g., "--source ~/projects/ag-setup/plugins/sdd-harness").
+   - Identify the target project path (e.g., "--target ~/projects/generative-guestbook-test" or "-t .").
+   - Check if the force overwrite flag is specified (e.g., "--force" or "-f").
+2. **Execute the copy script**:
+   - Run the Bash script located at `~/.gemini/config/plugins/project-orchestration/scripts/copy_plugin.sh`.
+   - Pass the arguments parsed.
+   - Example command: `bash ~/.gemini/config/plugins/project-orchestration/scripts/copy_plugin.sh --source <source_path> --target <target_path> [--force]`
+3. **Report results**:
+   - If the script succeeds, confirm to the user that the plugin was copied and report the staged files.
+   - If the script fails (e.g., because the target exists and --force was not set), report the failure details and explain how to override it.
+"""

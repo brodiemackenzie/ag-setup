@@ -71,54 +71,39 @@ if [ ! -f "$SOURCE_PLUGIN/plugin.json" ] && [ ! -f "$SOURCE_PLUGIN/gemini-extens
 fi
 
 PLUGIN_NAME=$(basename "$SOURCE_PLUGIN")
-DESTINATION_DIR="$TARGET_PROJECT/.agents/plugins/$PLUGIN_NAME"
 
-# 4. Safety Overwrite Check
-if [ -d "$DESTINATION_DIR" ]; then
-  if [ "$FORCE" = false ]; then
-    echo "[Blocked] Target plugin directory already exists: $DESTINATION_DIR" >&2
-    echo "To overwrite the existing local plugin and apply updates, re-run the command with the --force or -f flag." >&2
-    exit 2
-  else
-    echo "[Info] Target folder exists and --force is enabled. Overwriting existing plugin..."
-    rm -rf "$DESTINATION_DIR"
-  fi
-fi
+# 4. Stage assets to root-level discovery paths as first-class citizens
+echo "[Info] Copying plugin assets directly to native discovery paths..."
 
-# 5. Execute copy of full plugin bundle (for reference/tracking)
-echo "[Info] Copying plugin bundle from $SOURCE_PLUGIN to $DESTINATION_DIR..."
-mkdir -p "$DESTINATION_DIR"
-
-# Copy files excluding .git metadata and temporary checkouts
-rsync -av --exclude='.git' --exclude='node_modules' "$SOURCE_PLUGIN/" "$DESTINATION_DIR/"
-
-# 6. Distribute assets to root-level discovery paths as first-class citizens
-echo "[Info] Distributing assets to native discovery paths..."
-
-# Mirror Agents
+# Copy Agents
 if [ -d "$SOURCE_PLUGIN/agents" ]; then
   mkdir -p "$TARGET_PROJECT/.agents/agents"
   cp -f "$SOURCE_PLUGIN/agents/"*.json "$TARGET_PROJECT/.agents/agents/" 2>/dev/null || true
 fi
 
-# Mirror Skills (Playbooks)
+# Copy Skills (Playbooks)
 if [ -d "$SOURCE_PLUGIN/skills" ]; then
   mkdir -p "$TARGET_PROJECT/.agents/skills"
   cp -rf "$SOURCE_PLUGIN/skills/"* "$TARGET_PROJECT/.agents/skills/" 2>/dev/null || true
 fi
 
-# Mirror Rules
+# Copy Rules
 if [ -d "$SOURCE_PLUGIN/rules" ]; then
   mkdir -p "$TARGET_PROJECT/.agents/rules"
   cp -f "$SOURCE_PLUGIN/rules/"*.md "$TARGET_PROJECT/.agents/rules/" 2>/dev/null || true
 fi
 
-# Mirror Commands
+# Copy Scripts
+if [ -d "$SOURCE_PLUGIN/scripts" ]; then
+  mkdir -p "$TARGET_PROJECT/.agents/scripts"
+  cp -f "$SOURCE_PLUGIN/scripts/"* "$TARGET_PROJECT/.agents/scripts/" 2>/dev/null || true
+fi
+
+# Copy Commands
 if [ -d "$SOURCE_PLUGIN/commands" ]; then
   mkdir -p "$TARGET_PROJECT/.agents/commands"
   cp -f "$SOURCE_PLUGIN/commands/"*.toml "$TARGET_PROJECT/.agents/commands/" 2>/dev/null || true
 fi
 
-echo "[Success] Local plugin successfully staged!"
-echo "Target path: $DESTINATION_DIR"
+echo "[Success] Plugin $PLUGIN_NAME successfully staged to first-class paths under $TARGET_PROJECT/.agents/"
 echo "Note: It is highly recommended to commit your target project's .agents/ directory to track these changes in Git."

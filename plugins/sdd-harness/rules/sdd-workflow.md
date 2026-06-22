@@ -68,7 +68,7 @@ Before executing any slash command, you **MUST** verify that your active system 
 
 *   **Startup Verification Rule**: Upon starting a new conversation (on the very first turn), you **MUST** immediately run the programmatic status script using `run_command`:
     ```bash
-    bash .agents/plugins/sdd-harness/scripts/status_report.sh
+    bash .agents/scripts/status_report.sh
     ```
 *   Display the output table at the top of your response.
 *   **Next Steps Recommendation**: Below the Status Report table, recommend the next action based on the discovered file states:

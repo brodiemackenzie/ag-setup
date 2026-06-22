@@ -85,12 +85,39 @@ if [ -d "$DESTINATION_DIR" ]; then
   fi
 fi
 
-# 5. Execute copy
-echo "[Info] Copying plugin from $SOURCE_PLUGIN to $DESTINATION_DIR..."
+# 5. Execute copy of full plugin bundle (for reference/tracking)
+echo "[Info] Copying plugin bundle from $SOURCE_PLUGIN to $DESTINATION_DIR..."
 mkdir -p "$DESTINATION_DIR"
 
 # Copy files excluding .git metadata and temporary checkouts
 rsync -av --exclude='.git' --exclude='node_modules' "$SOURCE_PLUGIN/" "$DESTINATION_DIR/"
+
+# 6. Distribute assets to root-level discovery paths as first-class citizens
+echo "[Info] Distributing assets to native discovery paths..."
+
+# Mirror Agents
+if [ -d "$SOURCE_PLUGIN/agents" ]; then
+  mkdir -p "$TARGET_PROJECT/.agents/agents"
+  cp -f "$SOURCE_PLUGIN/agents/"*.json "$TARGET_PROJECT/.agents/agents/" 2>/dev/null || true
+fi
+
+# Mirror Skills (Playbooks)
+if [ -d "$SOURCE_PLUGIN/skills" ]; then
+  mkdir -p "$TARGET_PROJECT/.agents/skills"
+  cp -rf "$SOURCE_PLUGIN/skills/"* "$TARGET_PROJECT/.agents/skills/" 2>/dev/null || true
+fi
+
+# Mirror Rules
+if [ -d "$SOURCE_PLUGIN/rules" ]; then
+  mkdir -p "$TARGET_PROJECT/.agents/rules"
+  cp -f "$SOURCE_PLUGIN/rules/"*.md "$TARGET_PROJECT/.agents/rules/" 2>/dev/null || true
+fi
+
+# Mirror Commands
+if [ -d "$SOURCE_PLUGIN/commands" ]; then
+  mkdir -p "$TARGET_PROJECT/.agents/commands"
+  cp -f "$SOURCE_PLUGIN/commands/"*.toml "$TARGET_PROJECT/.agents/commands/" 2>/dev/null || true
+fi
 
 echo "[Success] Local plugin successfully staged!"
 echo "Target path: $DESTINATION_DIR"

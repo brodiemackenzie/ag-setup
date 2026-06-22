@@ -54,6 +54,7 @@ Before executing any slash command, you **MUST** verify that your active system 
 | `/close-feature` | `sdd-implementor` |
 | `/verify-feature` | `sdd-technical-lead` |
 | `/retrospective` | `sdd-engineering-manager` OR `sdd-product-manager` |
+| `/compile-docs` | `sdd-engineering-manager` OR `sdd-product-manager` |
 
 *   **Enforcement Rule**: If you parse one of these commands from the user (or are about to execute it autonomously) and your active system prompt persona does **not** match the required profile name:
     *   **Halt execution immediately.** Do not call any further tools.

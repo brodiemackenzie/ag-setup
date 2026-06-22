@@ -1,22 +1,27 @@
 ---
 name: open-feature
-description: Commit specification files, provision a sandboxed branch worktree, and instruct the user to open the workspace.
+description: Commit approved specification files, provision a sandboxed branch worktree, and instruct the user to open the workspace.
 ---
 
-# Open Feature Workflow
+# Open Feature Playbook
 
-You must act as the **sdd-project-manager** (profile `agents/sdd-project-manager.json`) to execute this workflow.
+You must act as the **sdd-implementor** (profile `agents/sdd-implementor.json`) to execute this playbook.
 
-## 1. Select Target Feature
-*   Ask the user which Epic and Feature they want to build (e.g. `ep-guest-submissions/ft-submission-form`).
-*   Verify that `SPEC.md`, `DESIGN.md`, and `TASKS.md` exist under that directory.
+---
 
-## 2. Commit Specifications
+## Playbook Execution
+
+### 1. Pre-Execution Checks
+*   Identify the target Epic and Feature to build (e.g. `ep-billing/ft-stripe-checkout`).
+*   Verify that `SPEC.md`, `DESIGN.md`, and `TASKS.md` exist under that feature directory.
+*   **Audit Check**: Verify that `TASKS.md` has the `EM_AUDIT: APPROVED` header block. If missing, halt execution and instruct the user to run the EM design auditor first.
+
+### 2. Commit Specifications
 *   Run `git status` in the parent repository.
 *   If there are uncommitted changes, explain to the user that we are going to commit all approved specifications first.
 *   Run `git add .` and `git commit -m "commit specs for ep-<epic> ft-<feature>"` to ensure the parent workspace is clean.
 
-## 3. Execute Sandbox Provisioning
+### 3. Provision Sandbox
 1.  Run the `/worktree create` slash command to provision the sandbox branch and register it as a new Project in Jetski Hub:
     ```
     /worktree create ep-<epic>-ft-<feature>

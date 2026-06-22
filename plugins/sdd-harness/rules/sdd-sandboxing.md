@@ -1,20 +1,40 @@
 ---
 trigger: always_on
-description: Enforce strict Git worktree sandboxing and active workspace relative locks.
+description: Enforce strict role-based folder write scopes and tool execution boundaries.
 ---
 
-# SDD Workspace Sandboxing Rules
+# SDD Sandboxing Rules
 
-You must strictly operate within your allocated workspace directories to prevent security and Git history pollution:
+You must strictly maintain the role-based boundaries defined below to ensure codebase hygiene and prevent un-reviewed modifications:
 
-## 1. Active Worktree Sandboxing
-* **Architect and Implementor Restrictions**: The Architect (`sdd-architect`) and Implementor (`sdd-implementor`) agents are strictly prohibited from executing commands inside or writing files directly to the top-level repository directory, with a single strict exception:
-  * **Phase 0 Exception**: The Architect is permitted to create and edit the `docs/PROJECT.md` file in the documentation folder context exclusively when compiling the High-Level Project Blueprint.
-* **Worktree Confines**: Aside from the Phase 0 exception, they must operate exclusively within their assigned Git worktree directory under `~/.gemini/jetski/worktrees/<project-name>/ep-<epic-name>-ft-<feature-name>/`.
-* **Relative path Locks**: Write paths inside agent configurations are resolved relative to their CWD workspace root (e.g., `./src/*`, `./docs/*`). 
-* **Top-Level Protection**: Any file creation, modification, or execution targeting files outside the active worktree directory (excluding the `docs/PROJECT.md` exception) is strictly forbidden and will be blocked immediately as a permission violation.
-* **Read-Only Spec Access**: The Coder agent is explicitly permitted read-only access to the parent repository's `docs/sdd/` directory to read specifications. This is a read-only exception; the agent must never execute commands or write files outside its sandbox.
+---
 
-## 2. Project Manager Exceptions
-* **The PM Boundary**: The Project Manager (`sdd-project-manager`) is the only agent permitted to operate in the top-level repository workspace for repository management and branch automation.
-* **Scope**: The PM's operations are strictly limited to repository layout coordination, running branch automation (creating/cleaning worktrees via `manage_worktree.sh`), and formatting document styles via linters.
+## 1. File Access & Write Scopes
+
+*   **Specification & Design Phases (Parent Repo)**:
+    *   **Allowed**: Writing and editing specifications under `docs/PROJECT.md` or `docs/sdd/ep-*/ft-*/*.md`.
+    *   **Prohibited**: Modifying any source code files (under `src/`, `lib/`, `app/`, etc.) or project configs (like `package.json`, `requirements.txt`).
+    *   **Enforcing Roles**: Only the Product Manager (`sdd-product-manager`), Engineering Manager (`sdd-engineering-manager`), and Technical Lead (`sdd-technical-lead`) profiles are authorized to operate in this phase.
+*   **Implementation Phase (Sandbox Worktree)**:
+    *   **Allowed**: Modifying source code files, tests, and configuration files *strictly inside the sandbox directory* (`worktrees/ep-*/ft-*/`).
+    *   **Prohibited**: Modifying any specifications (under `docs/sdd/`), rules, or playbooks (under `.agents/`). Any specification issues must be raised via a `spec_change_proposal.md` artifact.
+    *   **Enforcing Roles**: Only the Coder (`sdd-implementor`) profile is authorized to write files during this phase.
+
+---
+
+## 2. Tool Boundaries
+
+*   **Command Execution (`run_command`)**:
+    *   **PM and EM**: Strictly forbidden from calling `run_command`. They operate purely via file read/write and search tools.
+    *   **Technical Lead**: Allowed to run `run_command` *only* to execute parent test runner suites during verification. Forbidden from running compilers, git commands, or code generators.
+    *   **Coder**: Authorized to use `run_command` inside the sandbox to compile code, run tests, and manage the Git sandbox lifecycle (branching, worktree creation/merging).
+
+---
+
+## 3. Escalation Rules
+
+*   If the Coder detects that a requirement in `SPEC.md` or a database key contract in `DESIGN.md` is physically un-implementable:
+    1.  **Do not modify the spec file.**
+    2.  Write a `spec_change_proposal.md` artifact detailing the conflict.
+    3.  Report the issue in chat: *"Halted. Discovered specification conflict. Spec Change Proposal drafted. Please reload the Engineering Manager to adjust the design."*
+    4.  Halt execution and wait for user guidance.

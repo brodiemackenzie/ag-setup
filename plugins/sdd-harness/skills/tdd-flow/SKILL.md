@@ -1,107 +1,50 @@
-# Test-Driven Development (TDD) Playbook
+---
+name: tdd-flow
+description: Enforce strict Test-Driven Development (TDD) Red-Green-Refactor cycles and loop-escape escalation safety.
+---
 
-This playbook outlines the rigorous **Test-Driven Development (TDD)** engineering loops that the `sdd-implementor` agent must strictly execute for every task checkbox.
+# TDD Flow Playbook
+
+You must act strictly as the **sdd-implementor** (profile `agents/sdd-implementor.json`) in this sandboxed workspace.
 
 ---
 
-## Objective
-Translate Technical Design verification strategies into hermetic, fully-automated unit and integration test suites, enforcing that code is only written to satisfy failing test cases.
+## Playbook Execution
 
----
+### 1. Loop Initialization
+*   Locate the active task card in `docs/sdd/ep-*/ft-*/TASKS.md`.
+*   Maintain a local retry counter (starts at 0).
 
-## The Red-Green-Refactor TDD Loop
+### 2. Execution Phases
 
-For every single task card in `TASKS.md`, you must execute this three-phase loop:
+#### Phase A: RED (Write Failing Test)
+1.  Navigate to the tests folder (e.g. `tests/unit/` or `tests/integration/`).
+2.  Write a minimal test case representing the BDD `Given/When/Then` scenarios defined for the active task.
+3.  **Execute the test runner** (e.g. `pytest` or `npm test`) using `run_command`.
+4.  Verify that the test fails with the expected failure signature.
+5.  **Do not proceed to production code until you have a failing test.**
 
-```
-   [Identify Task in TASKS.md]
-               │
-               ▼
-   1. RED: Write Failing Test
-               │
-               ▼
-     [Run Test Suite ➔ FAIL]
-               │
-               ▼
-   2. GREEN: Write Minimal Code
-               │
-               ▼
-     [Run Test Suite ➔ PASS]
-               │
-               ▼
-   3. REFACTOR: Clean Up Code
-               │
-               ▼
-     [Run Test Suite ➔ PASS]
-               │
-               ▼
-    [Check off Task in TASKS.md]
-```
+#### Phase B: GREEN (Write Minimal Production Code)
+1.  Implement the minimal code necessary to make the failing test pass.
+2.  **Execute the test runner**.
+3.  If the test suite passes, proceed to Refactoring.
+4.  If the test suite fails:
+    *   Increment the retry counter.
+    *   If the retry counter is less than 3:
+        *   Surgically adjust the production code or mock details.
+        *   Re-run the test suite.
+    *   If the retry counter reaches 3:
+        *   **Halt execution immediately.**
+        *   Write a summary file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` detailing:
+            *   The failing test signature and traceback.
+            *   The code adjustments made in the 3 failed attempts.
+            *   Your hypothesis on the root cause.
+        *   Notify the user: *"Reached max retry limit of 3 for <task>. I have compiled failed_test_summary.md. Halting execution for guidance."*
+        *   Stop calling tools and wait for user instruction.
 
-### Phase 1: RED (Write Failing Test First)
-* Locate the test file or create a new one inside `tests/unit/` or `tests/integration/`.
-* Implement a test case covering the specific Happy Path or Boundary condition defined in the task.
-* Run the local test suite using `run_command` and verify that the test fails cleanly (RED). **You are strictly forbidden from writing production code before seeing a failing test.**
-
-### Phase 2: GREEN (Write Minimal Code to Pass)
-* Go to `src/` or the active codebase directory.
-* Write the *absolute minimum* production code necessary to satisfy the failing test. Do not build speculative features.
-* Run the test suite again. Verify that the test passes successfully (GREEN).
-
-### Phase 3: REFACTOR (Clean and Standardize)
-* Clean up any code structures: remove duplicate variables, modularize logic, and optimize loops.
-* Run the test suite once more to ensure the refactoring did not break any assertions (stays GREEN).
-* Standardize comments and docstrings according to the Google Python Style Guide.
-
----
-
-## Testing Constraints
-
-To maintain stable, high-speed, and decoupled test suites, you must enforce the following boundaries:
-
-### 1. Decoupled Folders
-* **Unit Tests (`tests/unit/`)**: Must be 100% mocked. Unit tests are strictly prohibited from making external HTTP calls, reading local files, or opening SQLite/PostgreSQL databases. Must run in under 10ms.
-* **Integration Tests (`tests/integration/`)**: Must execute within isolated sandboxes, such as an in-memory SQLite instance or mock network handlers.
-
-### 2. Hermetic Constraint
-* **No Active Network Sockets**: You are strictly forbidden from writing tests that make live API requests to external internet servers. If a third-party integration is required, you must fully mock the interface locally.
-
-### 3. No "Blind Completes"
-* **Physical Proof**: You are strictly forbidden from checking off a task `[x]` or ending your turn stating a task is finished without capturing and displaying the successful test runner output log directly in your text response.
-
----
-
-## TDD Loop Escape & Escalate Playbook
-
-If a test fails during Phase 2 (GREEN), you must track your consecutive failed attempts to avoid credit burn:
-
-1.  **Maintain a Retry Counter**: Keep a local counter of consecutive failed compilation/test runs for the active task.
-2.  **Max Retries (3 Attempts)**: You are allowed up to 3 consecutive refactoring runs to get the tests to pass.
-3.  **No Process Alterations**: You are strictly prohibited from modifying specifications (`SPEC.md` / `DESIGN.md`), rules (`.agents/plugins/sdd-harness/rules/`), or playbooks (`.agents/plugins/sdd-harness/skills/`) to force tests to pass. Only the project code or local mock test scripts may be edited.
-4.  **Escalation Protocol (On 3rd Failure)**:
-    *   Halt the TDD loop immediately.
-    *   Create a file `docs/sdd/ep-<epic>/ft-<feature>/failed_test_summary.md` using the template below:
-        ```markdown
-        # Failed Test Summary: [Task Slug]
-
-        ## 1. Active Task
-        *   **Task**: [e.g. tsk-2-routes]
-
-        ## 2. Test Execution Details
-        *   **Command**: [e.g. pytest tests/test_app.py]
-        *   **Failure Output**:
-            ```
-            [Paste traceback here]
-            ```
-
-        ## 3. Attempt History
-        *   **Attempt 1**: [Describe change made, e.g. added missing route]
-        *   **Attempt 2**: [Describe change made, e.g. changed payload dictionary keys]
-        *   **Attempt 3**: [Describe change made, e.g. updated mock return formats]
-
-        ## 4. Hypothesis & Blocks
-        *   [Explain why you believe the tests are failing and what block you are experiencing, e.g. library credentials requirement]
-        ```
-    *   Alert the user in chat: *"I have reached the max retry limit of 3 for <task_slug>. I have compiled a failed test summary. Please inspect the code or provide guidance on how to resolve the test failure."*
-    *   **Stop execution and wait** for the user's manual guidance.
-
+#### Phase C: REFACTOR (Code Cleanup)
+1.  Clean up code layout, variable scopes, and confirm all methods contain strict Google style docstrings.
+2.  Re-run the test suite to confirm it remains GREEN.
+3.  **Physical Proof**: Display the successful passing test runner output log directly in your text response to the user.
+4.  Update `TASKS.md` to check off the active task card: `- [x] tsk-<name>`.
+5.  Proceed to the next task card.

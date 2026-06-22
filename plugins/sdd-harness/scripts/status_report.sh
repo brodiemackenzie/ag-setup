@@ -7,7 +7,11 @@ PROJECT_ROOT="$(pwd)"
 
 # Check if we are inside a Git worktree sandbox
 IS_SANDBOX=false
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if git rev-parse --verify HEAD &>/dev/null; then
+    CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+else
+    CURRENT_BRANCH="$(git symbolic-ref --short HEAD 2>/dev/null || echo "main (unborn)")"
+fi
 WORKTREE_NAME="None"
 
 if git worktree list | grep -q "$(pwd)"; then

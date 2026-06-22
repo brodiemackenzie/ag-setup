@@ -1,5 +1,5 @@
 ---
-name: design-auditor
+name: audit-tasks
 description: Audit the Technical Lead's TASKS.md against DESIGN.md to check for completeness and verification alignment.
 ---
 

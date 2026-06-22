@@ -1,5 +1,5 @@
 ---
-name: spec-writer
+name: spec-feature
 description: Conduct functional requirements discovery and compile SPEC.md for a feature.
 ---
 

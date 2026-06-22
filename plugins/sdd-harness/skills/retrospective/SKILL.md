@@ -1,5 +1,5 @@
 ---
-name: retrospective-compiler
+name: retrospective
 description: Parse implementation logs, identify architectural deviations or testing bottlenecks, and update the LESSONS_LEARNED.md registry.
 ---
 

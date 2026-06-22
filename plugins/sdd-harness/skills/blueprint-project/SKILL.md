@@ -1,5 +1,5 @@
 ---
-name: project-interviewer
+name: blueprint-project
 description: Conduct the Vision Interview and compile the high-level Project Blueprint (docs/PROJECT.md) for a new project.
 ---
 

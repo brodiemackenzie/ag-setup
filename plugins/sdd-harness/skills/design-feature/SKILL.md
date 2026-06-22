@@ -1,5 +1,5 @@
 ---
-name: design-architect
+name: design-feature
 description: Compile cross-cutting technical design (DESIGN.md) mapping spec requirements to code interfaces.
 ---
 

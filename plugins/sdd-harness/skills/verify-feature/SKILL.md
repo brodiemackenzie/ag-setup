@@ -1,5 +1,5 @@
 ---
-name: feature-verifier
+name: verify-feature
 description: Verify implementation against requirements, run verification tests, and compile the VERIFICATION_REPORT.md.
 ---
 

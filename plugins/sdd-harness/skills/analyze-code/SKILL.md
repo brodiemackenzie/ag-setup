@@ -1,5 +1,5 @@
 ---
-name: code-analyzer
+name: analyze-code
 description: Scan the codebase to extract patterns, interfaces, and dependencies before technical design.
 ---
 

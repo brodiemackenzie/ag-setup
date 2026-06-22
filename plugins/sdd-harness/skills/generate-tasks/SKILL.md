@@ -1,5 +1,5 @@
 ---
-name: task-generator
+name: generate-tasks
 description: Decompose specifications and designs into a sequential BDD Gherkin task checklist (TASKS.md) capped at 12 cards.
 ---
 
